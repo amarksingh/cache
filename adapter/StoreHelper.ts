@@ -18,7 +18,7 @@ class StoreHelper {
      * @param {*} config
      * @param {*} prefix
      */
-    constructor(config, prefix = '') {
+    constructor(config: Record<string, any>, prefix: string = '') {
         this[kConfig] = config;
         this[kPrefix] = prefix;
     }
@@ -36,7 +36,7 @@ class StoreHelper {
      * @param {*} root
      * @returns {any}
      */
-    setRootUrl(root) {
+    setRootUrl(root: any) {
         this[kRootUrl] = url.resolve(root, '')
     }
 
@@ -45,7 +45,7 @@ class StoreHelper {
      * @param {*} root
      * @returns {any}
      */
-    setRootPath(root) {
+    setRootPath(root: any) {
         this[kRootPath] = path.normalize(root)
         fs.mkdirSync(path.normalize(this[kRootPath]), {
             recursive: true
@@ -65,7 +65,7 @@ class StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    applyDotPrefix(key = '') {
+    applyDotPrefix(key: string = '') {
         return this.getPrefix() + '.' + key
     }
 
@@ -82,7 +82,7 @@ class StoreHelper {
      * @param {*} dest
      * @returns {any}
      */
-    applyPathPrefix(dest) {
+    applyPathPrefix(dest: any) {
         return path.resolve(this[kRootPath], crypto.createHash('md5').update(this.getPrefix() + '_' + dest).digest('hex'))
     }
 
@@ -99,7 +99,7 @@ class StoreHelper {
      * @param {*} dest
      * @returns {any}
      */
-    applyUrlPrefix(dest = '/') {
+    applyUrlPrefix(dest: string = '/') {
         return url.resolve(([this[kRootUrl], dest].join('/')), '')
     }
 
@@ -109,7 +109,7 @@ class StoreHelper {
      * @param {*} callback
      * @returns {any}
      */
-    ensureDirectory(dir, callback) {
+    ensureDirectory(dir: any, callback: Function) {
         fs.ensureDir(dir, callback)
     }
 
@@ -118,7 +118,7 @@ class StoreHelper {
      * @param {*} dest
      * @returns {any}
      */
-    parsePath(dest) {
+    parsePath(dest: any) {
         return path.parse(dest)
     }
 
@@ -127,7 +127,7 @@ class StoreHelper {
      * @param {*} dest
      * @returns {any}
      */
-    dirname(dest) {
+    dirname(dest: any) {
         return this.parsePath(dest).dir
     }
 
@@ -136,7 +136,7 @@ class StoreHelper {
      * @param {*} content
      * @returns {any}
      */
-    getContent(content) {
+    getContent(content: any) {
         if (Array.isArray(content))
             return content[0]
         else
@@ -148,7 +148,7 @@ class StoreHelper {
      * @param {*} content
      * @returns {any}
      */
-    getBufferData(content) {
+    getBufferData(content: any) {
         return this.getContent(content).buffer
     }
 
@@ -157,7 +157,7 @@ class StoreHelper {
      * @param {*} value
      * @returns {any}
      */
-    valueType(value) {
+    valueType(value: any) {
         return valueType(value);
     }
 
@@ -166,7 +166,7 @@ class StoreHelper {
      * @param {*} value
      * @returns {any}
      */
-    serializeValue(value) {
+    serializeValue(value: any) {
         let dataType = this.valueType(value)
         return {
             serializedValue: dataType != 'string' ? JSON.stringify(value) : value,
@@ -179,7 +179,7 @@ class StoreHelper {
      * @param {*} obj
      * @returns {any}
      */
-    parseValue(obj) {
+    parseValue(obj: any) {
         obj = Buffer.isBuffer(obj) ? obj.toString() : obj
         obj = typeof obj == 'string' ? JSON.parse(obj) : obj
         if (['json', 'array', 'number'].includes(obj.valueType)) {

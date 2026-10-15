@@ -15,7 +15,7 @@ class RateLimiter extends InteractsWithTime {
      * Create a new instance.
      * @param {*} $cache
      */
-    constructor($cache) {
+    constructor($cache: any) {
         super();
         this.$cache = $cache;
     }
@@ -31,7 +31,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $name
      * @returns {any}
      */
-    limiter($name) {
+    limiter($name: string) {
         return this.$limiters[$name] ?? null;
     }
 
@@ -44,7 +44,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $decaySeconds
      * @returns {any}
      */
-    async attempt($key, $maxAttempts, $callback, $decaySeconds = 60) {
+    async attempt($key: string, $maxAttempts: number, $callback: Function, $decaySeconds: number = 60) {
         if (await this.tooManyAttempts($key, $maxAttempts)) {
             return false;
         }
@@ -64,7 +64,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $maxAttempts
      * @returns {any}
      */
-    async tooManyAttempts($key, $maxAttempts) {
+    async tooManyAttempts($key: string, $maxAttempts: number) {
         if (await this.attempts($key) >= $maxAttempts) {
             if (await this.$cache.has(this.cleanRateLimiterKey($key) + ':timer')) {
                 return true;
@@ -83,7 +83,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $decaySeconds
      * @returns {any}
      */
-    async hit($key, $decaySeconds = 60) {
+    async hit($key: string, $decaySeconds: number = 60) {
         $key = this.cleanRateLimiterKey($key);
 
         await this.$cache.put(
@@ -103,7 +103,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $key
      * @returns {any}
      */
-    attempts($key) {
+    attempts($key: string) {
         $key = this.cleanRateLimiterKey($key);
 
         return this.$cache.get($key, 0);
@@ -114,7 +114,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $key
      * @returns {any}
      */
-    resetAttempts($key) {
+    resetAttempts($key: string) {
         $key = this.cleanRateLimiterKey($key);
 
         return this.$cache.forget($key);
@@ -127,7 +127,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $maxAttempts
      * @returns {any}
      */
-    async remaining($key, $maxAttempts) {
+    async remaining($key: string, $maxAttempts: number) {
         $key = this.cleanRateLimiterKey($key);
 
         const $attempts = await this.attempts($key);
@@ -141,7 +141,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $maxAttempts
      * @returns {any}
      */
-    retriesLeft($key, $maxAttempts) {
+    retriesLeft($key: string, $maxAttempts: number) {
         return this.remaining($key, $maxAttempts);
     }
 
@@ -151,7 +151,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $key
      * @returns {any}
      */
-    clear($key) {
+    clear($key: string) {
         $key = this.cleanRateLimiterKey($key);
 
         this.resetAttempts($key);
@@ -165,7 +165,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $key
      * @returns {any}
      */
-    async availableIn($key) {
+    async availableIn($key: string) {
         $key = this.cleanRateLimiterKey($key);
         return Math.max(0, await this.$cache.get($key + ':timer') - this.currentTime());
     }
@@ -175,7 +175,7 @@ class RateLimiter extends InteractsWithTime {
      * @param {*} $key
      * @returns {any}
      */
-    cleanRateLimiterKey($key) {
+    cleanRateLimiterKey($key: string) {
         return $key.replace(/&([a-z])[a-z]+;/ig, '$1');
     }
 }

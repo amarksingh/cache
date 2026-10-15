@@ -22,7 +22,7 @@ class ClearCommand extends Command {
      * @param {*} $cache
      * @param {*} $files
      */
-    constructor($cache, $files) {
+    constructor($cache: any, $files: any) {
         super()
         this.$cache = $cache;
         this.$files = $files;

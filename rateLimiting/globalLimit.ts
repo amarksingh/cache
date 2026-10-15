@@ -9,7 +9,7 @@ class GlobalLimit extends Limit {
      * @param {*} $maxAttempts
      * @param {*} $decayMinutes
      */
-    constructor($maxAttempts, $decayMinutes = 1) {
+    constructor($maxAttempts: number, $decayMinutes: number = 1) {
         super('', $maxAttempts, $decayMinutes);
     }
 }

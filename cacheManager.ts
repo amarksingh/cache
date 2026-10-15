@@ -14,7 +14,7 @@ class CacheManager extends Manager {
      * @param {*} name
      * @returns {any}
      */
-    store(name = null) {
+    store(name: any = null) {
         return this.driver(name)
     }
 
@@ -23,7 +23,7 @@ class CacheManager extends Manager {
      * @param {*} name
      * @returns {any}
      */
-    resolve(name) {
+    resolve(name: string) {
 
         let $config = this.getStoreConfig(name);
 
@@ -38,7 +38,7 @@ class CacheManager extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createMemoryDriver($config) {
+    createMemoryDriver($config: Record<string, any>) {
         return this.adapt(new (require('./adapter/memory'))($config));
     }
 
@@ -47,7 +47,7 @@ class CacheManager extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createRedisDriver($config) {
+    createRedisDriver($config: Record<string, any>) {
         return this.adapt(new (require('./adapter/redis'))(new (require('./client/redis'))($config), $config, this.getPrefix()));
     }
 
@@ -56,7 +56,7 @@ class CacheManager extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createMemcachedDriver($config) {
+    createMemcachedDriver($config: Record<string, any>) {
         return this.adapt(new (require('./adapter/memcached'))(new (require('./client/memcached'))($config), $config, this.getPrefix()));
     }
 
@@ -65,7 +65,7 @@ class CacheManager extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createNullDriver($config) {
+    createNullDriver($config: Record<string, any>) {
         return this.adapt(new (require('./adapter/null'))($config));
     }
 
@@ -74,7 +74,7 @@ class CacheManager extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createFileDriver($config) {
+    createFileDriver($config: Record<string, any>) {
         return this.adapt(new (require('./adapter/file'))($config['path'], $config, this.getPrefix()))
     }
 
@@ -83,7 +83,7 @@ class CacheManager extends Manager {
      * @param {*} $config
      * @returns {any}
      */
-    createDatabaseDriver($config) {
+    createDatabaseDriver($config: Record<string, any>) {
         return this.adapt(new (require('./adapter/database'))($config['table'], this.$container.database))
     }
 
@@ -92,7 +92,7 @@ class CacheManager extends Manager {
      * @param {*} $cache
      * @returns {any}
      */
-    adapt($cache) {
+    adapt($cache: any) {
         return new CacheAdapter($cache, this.getConfig('enabled'));
     }
 
@@ -109,7 +109,7 @@ class CacheManager extends Manager {
      * @param {*} name
      * @returns {any}
      */
-    getStoreConfig(name) {
+    getStoreConfig(name: string) {
         return this.getConfig(`stores.${name}`);
     }
 
@@ -118,7 +118,7 @@ class CacheManager extends Manager {
      * @param {*} name
      * @returns {any}
      */
-    getDriverConfig(name) {
+    getDriverConfig(name: string) {
         return this.getStoreConfig(name);
     }
 

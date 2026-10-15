@@ -10,7 +10,7 @@ class Limit {
      * @param {*} $maxAttempts
      * @param {*} $decayMinutes
      */
-    constructor($key = '', $maxAttempts = 60, $decayMinutes = 1) {
+    constructor($key: string = '', $maxAttempts: number = 60, $decayMinutes: number = 1) {
         this.$key = $key;
         this.$maxAttempts = $maxAttempts;
         this.$decayMinutes = $decayMinutes;
@@ -23,7 +23,7 @@ class Limit {
      * @param {*} $maxAttempts
      * @returns {any}
      */
-    static perMinute($maxAttempts) {
+    static perMinute($maxAttempts: number) {
         return new this('', $maxAttempts);
     }
 
@@ -34,7 +34,7 @@ class Limit {
      * @param {*} $maxAttempts
      * @returns {any}
      */
-    static perMinutes($decayMinutes, $maxAttempts) {
+    static perMinutes($decayMinutes: number, $maxAttempts: number) {
         return new this('', $maxAttempts, $decayMinutes);
     }
 
@@ -45,7 +45,7 @@ class Limit {
      * @param {*} $decayHours
      * @returns {any}
      */
-    static perHour($maxAttempts, $decayHours = 1) {
+    static perHour($maxAttempts: number, $decayHours: number = 1) {
         return new this('', $maxAttempts, 60 * $decayHours);
     }
 
@@ -56,7 +56,7 @@ class Limit {
      * @param {*} $decayDays
      * @returns {any}
      */
-    static perDay($maxAttempts, $decayDays = 1) {
+    static perDay($maxAttempts: number, $decayDays: number = 1) {
         return new this('', $maxAttempts, 60 * 24 * $decayDays);
     }
 
@@ -75,7 +75,7 @@ class Limit {
      * @param {*} $key
      * @returns {any}
      */
-    by($key) {
+    by($key: string) {
         this.$key = $key;
 
         return this;
@@ -86,7 +86,7 @@ class Limit {
      * @param {*} $callback
      * @returns {any}
      */
-    response($callback) {
+    response($callback: Function) {
         this.$responseCallback = $callback;
 
         return this;

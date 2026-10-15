@@ -13,7 +13,7 @@ class MemcachedStore extends StoreHelper {
      * @param {*} $config
      * @param {*} $prefix
      */
-    constructor($client, $config, $prefix) {
+    constructor($client: any, $config: Record<string, any>, $prefix: any) {
         super($config, $prefix)
         this[kClient] = $client
     }
@@ -23,7 +23,7 @@ class MemcachedStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    get(key) {
+    get(key: string) {
         return this.connection().get(this.applyDotPrefix(key)).then(result => {
             return this.parseValue(result.value)
         })
@@ -36,7 +36,7 @@ class MemcachedStore extends StoreHelper {
      * @param {*} seconds
      * @returns {any}
      */
-    put(key, value, seconds = 0) {
+    put(key: string, value: any, seconds: number = 0) {
         const prefixedKey = this.applyDotPrefix(key)
         let {
             serializedValue,
@@ -54,7 +54,7 @@ class MemcachedStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    forget(key) {
+    forget(key: string) {
 
         return this.connection().delete(this.applyDotPrefix(key)).then(res => true).catch(err => false)
     }

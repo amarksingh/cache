@@ -18,7 +18,7 @@ class ForgetCommand extends Command {
      * Create a new instance.
      * @param {*} $cache
      */
-    constructor($cache) {
+    constructor($cache: any) {
         super()
 
         this.$cache = $cache;

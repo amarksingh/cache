@@ -11,7 +11,7 @@ class RedisClient {
      * Create a new instance.
      * @param {*} $config
      */
-    constructor($config) {
+    constructor($config: Record<string, any>) {
         this[kConfig] = $config
         return this
     }

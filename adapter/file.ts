@@ -12,7 +12,7 @@ class FileStore extends StoreHelper {
      * @param {*} $config
      * @param {*} $prefix
      */
-    constructor($root, $config, $prefix) {
+    constructor($root: any, $config: Record<string, any>, $prefix: any) {
         super($config, $prefix)
         this.setRootPath($root)
     }
@@ -23,7 +23,7 @@ class FileStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    async get(key) {
+    async get(key: string) {
         return fs.readJson(this.applyPathPrefix(key)).then((result) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
                 this.forget(key)
@@ -41,7 +41,7 @@ class FileStore extends StoreHelper {
      * @param {*} seconds
      * @returns {any}
      */
-    async put(key, value, seconds = 0) {
+    async put(key: string, value: any, seconds: number = 0) {
         let { serializedValue, valueType } = this.serializeValue(value)
         return fs.writeJson(this.applyPathPrefix(key), ({
             value: serializedValue,
@@ -57,7 +57,7 @@ class FileStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    async forget(key) {
+    async forget(key: string) {
         return fs.remove(this.applyPathPrefix(key))
     }
 

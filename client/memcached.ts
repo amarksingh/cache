@@ -11,7 +11,7 @@ class MemCache {
      * Create a new instance.
      * @param {*} $config
      */
-    constructor($config) {
+    constructor($config: Record<string, any>) {
         this[kConfig] = $config
         if(typeof this[kConfig] == 'object'){
             this[kConfig].options = {}

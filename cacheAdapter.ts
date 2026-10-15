@@ -17,7 +17,7 @@ class Cache {
      * @param {*} $adapter
      * @param {*} $enabled
      */
-    constructor($adapter, $enabled = true) {
+    constructor($adapter: any, $enabled: boolean = true) {
         this[kAdapter] = $adapter;
         this[kEnabled] = $enabled;
     }
@@ -28,7 +28,7 @@ class Cache {
      * @param {*} key
      * @returns {any}
      */
-    async has(key) {
+    async has(key: string) {
         if (this[kEnabled] == false) {
             return false
         }
@@ -43,7 +43,7 @@ class Cache {
      * @param {*} defaultValue
      * @returns {any}
      */
-    async get(key, defaultValue = null) {
+    async get(key: string, defaultValue: any = null) {
         if (this[kEnabled] == false) {
             return null
         }
@@ -59,7 +59,7 @@ class Cache {
      * @param {*} seconds
      * @returns {any}
      */
-    async put(key, value, seconds = 0) {
+    async put(key: string, value: any, seconds: number = 0) {
         if (this[kEnabled] == false) {
             return true
 
@@ -85,7 +85,7 @@ class Cache {
      * @param {*} defaultValue
      * @returns {any}
      */
-    async pull(key, defaultValue = null) {
+    async pull(key: string, defaultValue: any = null) {
         return this.get(key, defaultValue).then(async (value) => {
             return this.forget(key).then(res => value).catch(err => null)
         })
@@ -97,7 +97,7 @@ class Cache {
      * @param {*} keys
      * @returns {any}
      */
-    async many(keys) {
+    async many(keys: any) {
         return Promise.all(keys.map(key => this.get(key)))
             .then(values => {
                 let mappedValues = {}
@@ -115,7 +115,7 @@ class Cache {
      * @param {*} seconds
      * @returns {any}
      */
-    async putMany(object = {}, seconds) {
+    async putMany(object: Record<string, any> = {}, seconds: number) {
         for (let prop in object) {
             object[prop] = this.put(prop, object[prop], getSeconds(seconds));
         }
@@ -150,7 +150,7 @@ class Cache {
      * @param {*} value
      * @returns {any}
      */
-    async increment(key, value = 1) {
+    async increment(key: string, value: number = 1) {
         return this[kIncrementOrDecrement](key, value, (currentValue) => {
             return currentValue + value
         })
@@ -164,7 +164,7 @@ class Cache {
      * @param {*} value
      * @returns {any}
      */
-    async decrement(key, value = 1) {
+    async decrement(key: string, value: number = 1) {
         return this[kIncrementOrDecrement](key, value, (currentValue) => {
             return currentValue - value
         })
@@ -178,7 +178,7 @@ class Cache {
      * @param {*} value
      * @returns {any}
      */
-    async forever(key, value) {
+    async forever(key: string, value: any) {
         return this.put(key, value, Infinity)
     }
 
@@ -190,7 +190,7 @@ class Cache {
      * @param {*} cb
      * @returns {any}
      */
-    async remember(key, seconds = 0, cb) {
+    async remember(key: string, seconds: number = 0, cb: any) {
         if (typeof cb != 'function') {
             throw Error('Callback is required.')
         }
@@ -219,7 +219,7 @@ class Cache {
      * @param {*} cb
      * @returns {any}
      */
-    async rememberForever(key, cb) {
+    async rememberForever(key: string, cb: any) {
         if (typeof cb != 'function') {
             throw Error('Callback should be required.')
         }
@@ -232,7 +232,7 @@ class Cache {
      * @param {*} key
      * @returns {any}
      */
-    async forget(key) {
+    async forget(key: string) {
         if (this[kEnabled] == false) {
             return true
         }

@@ -14,7 +14,7 @@ class RedisStore extends StoreHelper {
      * @param {*} $config
      * @param {*} $prefix
      */
-    constructor($redisClient, $config, $prefix) {
+    constructor($redisClient: any, $config: Record<string, any>, $prefix: any) {
         super($config, $prefix)
         this[kClient] = $redisClient
     }
@@ -25,7 +25,7 @@ class RedisStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    async get(key) {
+    async get(key: string) {
         return this.connection().getAsync(this.applyDotPrefix(key)).then(result => {
             return this.parseValue(result)
         })
@@ -39,7 +39,7 @@ class RedisStore extends StoreHelper {
      * @param {*} seconds
      * @returns {any}
      */
-    async put(key, value, seconds = 0) {
+    async put(key: string, value: any, seconds: number = 0) {
         const prefixedKey = this.applyDotPrefix(key)
         let {
             serializedValue,
@@ -58,7 +58,7 @@ class RedisStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    async forget(key) {
+    async forget(key: string) {
         return this.connection().delAsync(this.applyDotPrefix(key)).then(res => true).catch(err => false)
     }
 

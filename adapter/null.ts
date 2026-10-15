@@ -10,7 +10,7 @@ class NullStore {
      * @param {*} defaultValue
      * @returns {any}
      */
-    async get(key,defaultValue=null) {
+    async get(key: string, defaultValue: any = null) {
         return null
     }
 
@@ -22,7 +22,7 @@ class NullStore {
      * @param {*} seconds
      * @returns {any}
      */
-    async put(key, value, seconds = 0) {
+    async put(key: string, value: any, seconds: number = 0) {
         return true
     }
 
@@ -32,7 +32,7 @@ class NullStore {
      * @param {*} key
      * @returns {any}
      */
-    async forget(key) {
+    async forget(key: string) {
         return true
     }
 

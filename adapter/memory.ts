@@ -11,7 +11,7 @@ class ObjectStore extends StoreHelper {
      * Create a new instance.
      * @param {*} $config
      */
-    constructor($config) {
+    constructor($config: Record<string, any>) {
         super($config)
         this[kStorage] = Object.create(null)
     }
@@ -22,7 +22,7 @@ class ObjectStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    async get(key) {
+    async get(key: string) {
         let cache = this[kStorage][this.applyDotPrefix(key)]
         if (cache === undefined) {
             return Promise.reject()
@@ -42,7 +42,7 @@ class ObjectStore extends StoreHelper {
      * @param {*} seconds
      * @returns {any}
      */
-    async put(key, value, seconds = 0) {
+    async put(key: string, value: any, seconds: number = 0) {
         let expiration = secondsToMs(seconds);
         this[kStorage][this.applyDotPrefix(key)] = {
             value: value,
@@ -57,7 +57,7 @@ class ObjectStore extends StoreHelper {
      * @param {*} key
      * @returns {any}
      */
-    async forget(key) {
+    async forget(key: string) {
         delete this[kStorage][this.applyDotPrefix(key)]
         return Promise.resolve(true)
     }
