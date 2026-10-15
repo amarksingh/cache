@@ -1,13 +1,28 @@
 const fs = require('fs-extra')
 const StoreHelper = require('./StoreHelper')
 const { secondsToMs } = require('../utils')
+/**
+ * Class FileStore.
+ */
 class FileStore extends StoreHelper {
 
+    /**
+     * Create a new instance.
+     * @param {*} $root
+     * @param {*} $config
+     * @param {*} $prefix
+     */
     constructor($root, $config, $prefix) {
         super($config, $prefix)
         this.setRootPath($root)
     }
 
+    /**
+     * get method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async get(key) {
         return fs.readJson(this.applyPathPrefix(key)).then((result) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
@@ -18,6 +33,14 @@ class FileStore extends StoreHelper {
         })
     }
 
+    /**
+     * put method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @param {*} seconds
+     * @returns {any}
+     */
     async put(key, value, seconds = 0) {
         let { serializedValue, valueType } = this.serializeValue(value)
         return fs.writeJson(this.applyPathPrefix(key), ({
@@ -28,10 +51,21 @@ class FileStore extends StoreHelper {
             .then(result => true)
     }
 
+    /**
+     * forget method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async forget(key) {
         return fs.remove(this.applyPathPrefix(key))
     }
 
+    /**
+     * flush method.
+     * @async
+     * @returns {any}
+     */
     async flush() {
         return fs.emptyDir(this.getRootPath())
     }

@@ -2,13 +2,26 @@ const StoreHelper = require('./StoreHelper');
 const kStorage = Symbol('storage');
 const { secondsToMs } = require('../utils')
 
+/**
+ * Class ObjectStore.
+ */
 class ObjectStore extends StoreHelper {
 
+    /**
+     * Create a new instance.
+     * @param {*} $config
+     */
     constructor($config) {
         super($config)
         this[kStorage] = Object.create(null)
     }
 
+    /**
+     * get method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async get(key) {
         let cache = this[kStorage][this.applyDotPrefix(key)]
         if (cache === undefined) {
@@ -21,6 +34,14 @@ class ObjectStore extends StoreHelper {
         return Promise.resolve(cache)
     }
 
+    /**
+     * put method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @param {*} seconds
+     * @returns {any}
+     */
     async put(key, value, seconds = 0) {
         let expiration = secondsToMs(seconds);
         this[kStorage][this.applyDotPrefix(key)] = {
@@ -30,11 +51,22 @@ class ObjectStore extends StoreHelper {
         return true
     }
 
+    /**
+     * forget method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async forget(key) {
         delete this[kStorage][this.applyDotPrefix(key)]
         return Promise.resolve(true)
     }
 
+    /**
+     * flush method.
+     * @async
+     * @returns {any}
+     */
     async flush() {
 
         this[kStorage] = {}

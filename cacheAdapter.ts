@@ -4,16 +4,30 @@ const Promise = require("bluebird")
 let kIncrementOrDecrement = Symbol('incrementOrDecrement')
 const kEnabled = Symbol('enabled')
 
+/**
+ * Class Cache.
+ */
 class Cache {
 
     [kAdapter];
     [kEnabled];
 
+    /**
+     * Create a new instance.
+     * @param {*} $adapter
+     * @param {*} $enabled
+     */
     constructor($adapter, $enabled = true) {
         this[kAdapter] = $adapter;
         this[kEnabled] = $enabled;
     }
 
+    /**
+     * has method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async has(key) {
         if (this[kEnabled] == false) {
             return false
@@ -22,6 +36,13 @@ class Cache {
         return Boolean(typeof data !== undefined && data) || false
     }
 
+    /**
+     * get method.
+     * @async
+     * @param {*} key
+     * @param {*} defaultValue
+     * @returns {any}
+     */
     async get(key, defaultValue = null) {
         if (this[kEnabled] == false) {
             return null
@@ -30,6 +51,14 @@ class Cache {
             .catch(err => defaultValue)
     }
 
+    /**
+     * put method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @param {*} seconds
+     * @returns {any}
+     */
     async put(key, value, seconds = 0) {
         if (this[kEnabled] == false) {
             return true
@@ -49,12 +78,25 @@ class Cache {
             .catch(err => false)
     }
 
+    /**
+     * pull method.
+     * @async
+     * @param {*} key
+     * @param {*} defaultValue
+     * @returns {any}
+     */
     async pull(key, defaultValue = null) {
         return this.get(key, defaultValue).then(async (value) => {
             return this.forget(key).then(res => value).catch(err => null)
         })
     }
 
+    /**
+     * many method.
+     * @async
+     * @param {*} keys
+     * @returns {any}
+     */
     async many(keys) {
         return Promise.all(keys.map(key => this.get(key)))
             .then(values => {
@@ -66,6 +108,13 @@ class Cache {
             })
     }
 
+    /**
+     * putMany method.
+     * @async
+     * @param {*} object
+     * @param {*} seconds
+     * @returns {any}
+     */
     async putMany(object = {}, seconds) {
         for (let prop in object) {
             object[prop] = this.put(prop, object[prop], getSeconds(seconds));
@@ -94,6 +143,13 @@ class Cache {
             .catch(err => false)
     }
 
+    /**
+     * increment method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @returns {any}
+     */
     async increment(key, value = 1) {
         return this[kIncrementOrDecrement](key, value, (currentValue) => {
             return currentValue + value
@@ -101,6 +157,13 @@ class Cache {
             .catch(err => false)
     }
 
+    /**
+     * decrement method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @returns {any}
+     */
     async decrement(key, value = 1) {
         return this[kIncrementOrDecrement](key, value, (currentValue) => {
             return currentValue - value
@@ -108,10 +171,25 @@ class Cache {
             .catch(err => false)
     }
 
+    /**
+     * forever method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @returns {any}
+     */
     async forever(key, value) {
         return this.put(key, value, Infinity)
     }
 
+    /**
+     * remember method.
+     * @async
+     * @param {*} key
+     * @param {*} seconds
+     * @param {*} cb
+     * @returns {any}
+     */
     async remember(key, seconds = 0, cb) {
         if (typeof cb != 'function') {
             throw Error('Callback is required.')
@@ -134,6 +212,13 @@ class Cache {
         })
     }
 
+    /**
+     * rememberForever method.
+     * @async
+     * @param {*} key
+     * @param {*} cb
+     * @returns {any}
+     */
     async rememberForever(key, cb) {
         if (typeof cb != 'function') {
             throw Error('Callback should be required.')
@@ -141,6 +226,12 @@ class Cache {
         return this.remember(key, Infinity, cb)
     }
 
+    /**
+     * forget method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async forget(key) {
         if (this[kEnabled] == false) {
             return true
@@ -148,6 +239,11 @@ class Cache {
         return this[kAdapter].forget(key).then(res => true).catch(err => false)
     }
 
+    /**
+     * flush method.
+     * @async
+     * @returns {any}
+     */
     async flush() {
         if (this[kEnabled] == false) {
             return true

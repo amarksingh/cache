@@ -2,8 +2,15 @@ const memcached  = require('memjs')
 const kConnection = Symbol('connection')
 const kConfig = Symbol('config')
 
+/**
+ * Class MemCache.
+ */
 class MemCache {
 
+    /**
+     * Create a new instance.
+     * @param {*} $config
+     */
     constructor($config) {
         this[kConfig] = $config
         if(typeof this[kConfig] == 'object'){
@@ -12,6 +19,10 @@ class MemCache {
         return this
     }
 
+    /**
+     * getConnection method.
+     * @returns {any}
+     */
     getConnection() {
         if (!this[kConnection]) {
             let server = this[kConfig]['server']

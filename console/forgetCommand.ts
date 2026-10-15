@@ -1,5 +1,8 @@
 const Command = require('@ostro/console/command')
 
+/**
+ * Class ForgetCommand.
+ */
 class ForgetCommand extends Command {
 
     $signature = 'cache:forget';
@@ -11,12 +14,21 @@ class ForgetCommand extends Command {
         this.createArgument('store', 'The store to remove the key from')
     ];
 
+    /**
+     * Create a new instance.
+     * @param {*} $cache
+     */
     constructor($cache) {
         super()
 
         this.$cache = $cache;
     }
 
+    /**
+     * handle method.
+     * @async
+     * @returns {any}
+     */
     async handle() {
         await this.$cache.store(this.argument('store')).forget(
             this.argument('key')

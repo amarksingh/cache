@@ -1,17 +1,46 @@
+/**
+ * Class NullStore.
+ */
 class NullStore {
 
+    /**
+     * get method.
+     * @async
+     * @param {*} key
+     * @param {*} defaultValue
+     * @returns {any}
+     */
     async get(key,defaultValue=null) {
         return null
     }
 
+    /**
+     * put method.
+     * @async
+     * @param {*} key
+     * @param {*} value
+     * @param {*} seconds
+     * @returns {any}
+     */
     async put(key, value, seconds = 0) {
         return true
     }
 
+    /**
+     * forget method.
+     * @async
+     * @param {*} key
+     * @returns {any}
+     */
     async forget(key) {
         return true
     }
 
+    /**
+     * flush method.
+     * @async
+     * @returns {any}
+     */
     async flush() {
         return true
     }

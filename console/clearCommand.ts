@@ -1,5 +1,8 @@
 const Command = require('@ostro/console/command')
 
+/**
+ * Class ClearCommand.
+ */
 class ClearCommand extends Command {
 
     $signature = 'cache:clear';
@@ -14,12 +17,22 @@ class ClearCommand extends Command {
         this.createArgument('[tag]', 'The cache tags you would like to clear')
     ];
 
+    /**
+     * Create a new instance.
+     * @param {*} $cache
+     * @param {*} $files
+     */
     constructor($cache, $files) {
         super()
         this.$cache = $cache;
         this.$files = $files;
     }
 
+    /**
+     * handle method.
+     * @async
+     * @returns {any}
+     */
     async handle() {
         let $successful = await this.cache().flush();
 
@@ -32,6 +45,11 @@ class ClearCommand extends Command {
         this.info('Application cache cleared!');
     }
 
+    /**
+     * flushFacades method.
+     * @async
+     * @returns {any}
+     */
     async flushFacades() {
         let $storagePath = storage_path('framework/cache')
         if (!await this.$files.exists($storagePath)) {
@@ -45,12 +63,20 @@ class ClearCommand extends Command {
         }
     }
 
+    /**
+     * cache method.
+     * @returns {any}
+     */
     cache() {
         return this.$cache.store(this.argument('store'));
 
         return empty(this.tags()) ? $cache : $cache.tags(this.tags());
     }
 
+    /**
+     * tags method.
+     * @returns {any}
+     */
     tags() {
         return this.option('tags').split(',').filter(data => data)
     }
