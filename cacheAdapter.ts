@@ -1,21 +1,23 @@
-const { promiseAll, getSeconds } = require('./utils')
-const kAdapter = Symbol('adapter')
-const Promise = require("bluebird")
-let kIncrementOrDecrement = Symbol('incrementOrDecrement')
-const kEnabled = Symbol('enabled')
+import type { ICacheRepository } from '@ostro/contracts/cache/repositry';
+
+const { promiseAll, getSeconds } = require('./utils');
+const kAdapter = Symbol('adapter');
+const Promise = require("bluebird");
+let kIncrementOrDecrement = Symbol('incrementOrDecrement');
+const kEnabled = Symbol('enabled');
 
 /**
  * Class Cache.
  */
-class Cache {
+class Cache implements ICacheRepository {
 
-    [kAdapter];
-    [kEnabled];
+    [kAdapter]: any;
+    [kEnabled]: boolean;
 
     /**
      * Create a new instance.
      * @param {*} $adapter
-     * @param {*} $enabled
+     * @param {boolean} $enabled
      */
     constructor($adapter: any, $enabled: boolean = true) {
         this[kAdapter] = $adapter;
