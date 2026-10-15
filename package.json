@@ -2,7 +2,7 @@
   "name": "@ostro/cache",
   "version": "1.0.2",
   "description": "Caching module for OstroJS",
-  "main": "cacheManager.js",
+  "main": "cacheManager.ts",
   "scripts": {
     "test": "npx c8 npx jest"
   },

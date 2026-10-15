@@ -20,7 +20,7 @@ module.exports = {
         "^@ostro/contracts/(.*)$": "<rootDir>/../contracts/$1",
         "^@ostro/contracts$": "<rootDir>/../contracts",
         "^@ostro/cache/(.*)$": "<rootDir>/$1",
-        "^@ostro/cache$": "<rootDir>/cacheManager.js"
+        "^@ostro/cache$": "<rootDir>/cacheManager"
     },
     "collectCoverage": true,
     "coverageDirectory": "coverage",
