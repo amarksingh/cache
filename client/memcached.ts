@@ -1,5 +1,3 @@
-import memcached from 'memjs';
-
 const kConnection: unique symbol = Symbol('connection');
 const kConfig: unique symbol = Symbol('config');
 
@@ -28,6 +26,8 @@ class MemCache {
      */
     getConnection(): any {
         if (!this[kConnection]) {
+            const memcachedModule = require('memjs');
+            const memcached = memcachedModule?.default || memcachedModule;
             const server = this[kConfig]['server'];
             this[kConnection] = (memcached as any).Client.create(
                 server['host'] + ':' + server['port'],

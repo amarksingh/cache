@@ -1,5 +1,3 @@
-import redis from 'redis';
-
 const kConnection: unique symbol = Symbol('connection');
 const kConfig: unique symbol = Symbol('config');
 
@@ -25,6 +23,8 @@ class RedisClient {
      */
     getConnection(): any {
         if (!this[kConnection]) {
+            const redisModule = require('redis');
+            const redis = redisModule?.default || redisModule;
             const server = this[kConfig]['server'];
             this[kConnection] = (redis as any).createClient(server['port'], server['host'], server);
             this[kConnection].auth(server['password']);
