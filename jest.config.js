@@ -28,5 +28,16 @@ module.exports = {
         "text",
         "lcov",
         "clover"
+    ],
+    "collectCoverageFrom": [
+        "<rootDir>/**/*.ts",
+        "!<rootDir>/node_modules/**",
+        "!<rootDir>/test/**",
+        "!<rootDir>/coverage/**",
+        "!<rootDir>/build/**",
+        "!<rootDir>/jest.config.js"
+    ],
+    "modulePathIgnorePatterns": [
+        "<rootDir>/build/"
     ]
 };

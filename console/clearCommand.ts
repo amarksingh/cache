@@ -5,17 +5,28 @@ import Command from '@ostro/console/command';
  */
 class ClearCommand extends Command {
 
-    $signature = 'cache:clear';
+    get $signature(): string {
+        return 'cache:clear';
+    }
 
-    $description = 'Flush the application cache';
+    get $description(): string {
+        return 'Flush the application cache';
+    }
 
-    $options = [
-        this.createOption('--store [store] ', 'The name of the store you would like to clear').default(''),
-    ];
+    get $options(): any[] {
+        return [
+            this.createOption('--store [store] ', 'The name of the store you would like to clear').default(''),
+        ];
+    }
 
-    $arguments = [
-        this.createArgument('[tag]', 'The cache tags you would like to clear')
-    ];
+    get $arguments(): any[] {
+        return [
+            this.createArgument('[tag]', 'The cache tags you would like to clear')
+        ];
+    }
+
+    public $cache: any;
+    public $files: any;
 
     /**
      * Create a new instance.
@@ -45,13 +56,16 @@ class ClearCommand extends Command {
         this.info('Application cache cleared!');
     }
 
+    declare public $app: any;
+
     /**
      * flushFacades method.
      * @async
      * @returns {any}
      */
     async flushFacades() {
-        let $storagePath = storage_path('framework/cache')
+        let storageFn = (globalThis as any).storage_path;
+        let $storagePath = typeof storageFn === 'function' ? storageFn('framework/cache') : (this.$app?.storagePath ? this.$app.storagePath('framework/cache') : 'storage/framework/cache');
         if (!await this.$files.exists($storagePath)) {
             return;
         }
@@ -68,9 +82,9 @@ class ClearCommand extends Command {
      * @returns {any}
      */
     cache() {
-        return this.$cache.store(this.argument('store'));
-
-        return empty(this.tags()) ? $cache : $cache.tags(this.tags());
+        let $cache = this.$cache.store(this.argument('store'));
+        let tags = this.tags();
+        return (!tags || tags.length === 0) ? $cache : $cache.tags(tags);
     }
 
     /**
@@ -78,7 +92,8 @@ class ClearCommand extends Command {
      * @returns {any}
      */
     tags() {
-        return this.option('tags').split(',').filter(data => data)
+        let tags = this.option('tags');
+        return typeof tags === 'string' ? tags.split(',').filter(data => data) : [];
     }
 
 }

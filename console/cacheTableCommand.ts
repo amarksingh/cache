@@ -4,9 +4,16 @@ import Command from '@ostro/console/command';
  */
 class CacheTableCommand extends Command {
 
-    $signature = 'cache:table';
+    get $signature(): string {
+        return 'cache:table';
+    }
 
-    $description = 'Create a migration for the cache database table';
+    get $description(): string {
+        return 'Create a migration for the cache database table';
+    }
+
+    public $file: any;
+    declare public $app: any;
 
     /**
      * Create a new instance.

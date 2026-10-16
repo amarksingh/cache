@@ -5,14 +5,22 @@ import Command from '@ostro/console/command';
  */
 class ForgetCommand extends Command {
 
-    $signature = 'cache:forget';
+    get $signature(): string {
+        return 'cache:forget';
+    }
 
-    $description = 'Remove an item from the cache';
+    get $description(): string {
+        return 'Remove an item from the cache';
+    }
 
-    $arguments = [
-        this.createArgument('key', 'The key to remove').required(),
-        this.createArgument('store', 'The store to remove the key from')
-    ];
+    get $arguments(): any[] {
+        return [
+            this.createArgument('key', 'The key to remove').required(),
+            this.createArgument('store', 'The store to remove the key from')
+        ];
+    }
+
+    public $cache: any;
 
     /**
      * Create a new instance.
