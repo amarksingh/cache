@@ -1,15 +1,6 @@
-const GlobalLimit = require('./globalLimit');
-/**
- * Class Unlimited.
- */
-class Unlimited extends GlobalLimit {
+import Limit from './limit';
 
-    /**
-     * Create a new instance.
-     */
-    constructor() {
-        super(Infinity);
-    }
-}
+const Unlimited = Limit.Unlimited;
+type Unlimited = Limit.Unlimited;
 
-module.exports = Unlimited;
+export = Unlimited;

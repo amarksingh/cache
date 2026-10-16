@@ -1,10 +1,10 @@
 import type { ICacheRepository } from '@ostro/contracts/cache/repositry';
+import { promiseAll, getSeconds } from './utils';
+import Promise from 'bluebird';
 
-const { promiseAll, getSeconds } = require('./utils');
-const kAdapter = Symbol('adapter');
-const Promise = require("bluebird");
-let kIncrementOrDecrement = Symbol('incrementOrDecrement');
-const kEnabled = Symbol('enabled');
+const kAdapter: unique symbol = Symbol('adapter');
+const kIncrementOrDecrement: unique symbol = Symbol('incrementOrDecrement');
+const kEnabled: unique symbol = Symbol('enabled');
 
 /**
  * Class Cache.
@@ -16,8 +16,8 @@ class Cache implements ICacheRepository {
 
     /**
      * Create a new instance.
-     * @param {*} $adapter
-     * @param {boolean} $enabled
+     * @param $adapter - Cache adapter store
+     * @param $enabled - Whether caching is enabled
      */
     constructor($adapter: any, $enabled: boolean = true) {
         this[kAdapter] = $adapter;
@@ -25,234 +25,237 @@ class Cache implements ICacheRepository {
     }
 
     /**
-     * has method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Determine if an item exists in the cache.
+     * @param key - Cache key identifier
+     * @returns True if key exists and has value
      */
-    async has(key: string) {
-        if (this[kEnabled] == false) {
-            return false
+    async has(key: string): Promise<boolean> {
+        if (this[kEnabled] === false) {
+            return false;
         }
         const data = await this.get(key);
-        return Boolean(typeof data !== undefined && data) || false
+        return Boolean(typeof data !== undefined && data) || false;
     }
 
     /**
-     * get method.
-     * @async
-     * @param {*} key
-     * @param {*} defaultValue
-     * @returns {any}
+     * Retrieve an item from the cache by key.
+     * @typeParam T - Expected value type
+     * @param key - Cache key identifier
+     * @param defaultValue - Default value if not found
+     * @returns Cached value or default value
      */
-    async get(key: string, defaultValue: any = null) {
-        if (this[kEnabled] == false) {
-            return null
+    async get<T = unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
+        if (this[kEnabled] === false) {
+            return null;
         }
-        return this[kAdapter].get(key).then(result => result.value)
-            .catch(err => defaultValue)
+        return this[kAdapter].get(key).then((result: any) => result.value)
+            .catch(() => defaultValue);
     }
 
     /**
-     * put method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @param {*} seconds
-     * @returns {any}
+     * Store an item in the cache for a given number of seconds.
+     * @typeParam T - Value type
+     * @param key - Cache key identifier
+     * @param value - Value to cache
+     * @param seconds - Duration in seconds or Date expiration
+     * @returns True if saved successfully
      */
-    async put(key: string, value: any, seconds: number = 0) {
-        if (this[kEnabled] == false) {
-            return true
-
+    async put<T = unknown>(key: string, value: T, seconds: number | Date = 0): Promise<boolean> {
+        if (this[kEnabled] === false) {
+            return true;
         }
-        seconds = getSeconds(seconds)
-        if (isNaN(seconds)) {
-            seconds = 0
+        let sec: number = getSeconds(seconds);
+        if (isNaN(sec)) {
+            sec = 0;
         }
-        return this[kAdapter].put(key, value, seconds)
-            .then(result => {
-                if (result == true)
-                    return true
+        return this[kAdapter].put(key, value, sec)
+            .then((result: any) => {
+                if (result === true)
+                    return true;
                 else
-                    return Promise.reject(false)
+                    return Promise.reject(false);
             })
-            .catch(err => false)
+            .catch(() => false);
     }
 
     /**
-     * pull method.
-     * @async
-     * @param {*} key
-     * @param {*} defaultValue
-     * @returns {any}
+     * Retrieve an item from the cache and delete it.
+     * @typeParam T - Expected value type
+     * @param key - Cache key identifier
+     * @param defaultValue - Default value if not found
+     * @returns Cached value or default
      */
-    async pull(key: string, defaultValue: any = null) {
-        return this.get(key, defaultValue).then(async (value) => {
-            return this.forget(key).then(res => value).catch(err => null)
-        })
+    async pull<T = unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
+        return this.get<T>(key, defaultValue).then(async (value) => {
+            return this.forget(key).then(() => value).catch(() => null);
+        });
     }
 
     /**
-     * many method.
-     * @async
-     * @param {*} keys
-     * @returns {any}
+     * Retrieve multiple items from the cache by key.
+     * @typeParam T - Expected value type
+     * @param keys - Array of cache keys
+     * @returns Dictionary of cached values
      */
-    async many(keys: any) {
-        return Promise.all(keys.map(key => this.get(key)))
-            .then(values => {
-                let mappedValues = {}
+    async many<T = unknown>(keys: string[]): Promise<Record<string, T | null>> {
+        return Promise.all(keys.map(key => this.get<T>(key)))
+            .then((values: (T | null)[]) => {
+                let mappedValues: Record<string, T | null> = {};
                 for (let i = 0; i < keys.length; i++) {
-                    mappedValues[keys[i]] = values[i]
+                    mappedValues[keys[i]] = values[i];
                 }
-                return mappedValues
-            })
+                return mappedValues;
+            });
     }
 
     /**
-     * putMany method.
-     * @async
-     * @param {*} object
-     * @param {*} seconds
-     * @returns {any}
+     * Store multiple items in the cache.
+     * @param object - Key-value dictionary
+     * @param seconds - Duration in seconds or Date expiration
+     * @returns Dictionary of results
      */
-    async putMany(object: Record<string, any> = {}, seconds: number) {
+    async putMany(object: Record<string, any> = {}, seconds: number | Date = 0): Promise<Record<string, boolean>> {
+        const promisesObj: Record<string, Promise<any>> = {};
         for (let prop in object) {
-            object[prop] = this.put(prop, object[prop], getSeconds(seconds));
+            promisesObj[prop] = this.put(prop, object[prop], getSeconds(seconds));
         }
-        return promiseAll(object)
+        return promiseAll<Record<string, boolean>>(promisesObj);
     }
 
-    async [kIncrementOrDecrement](key, value, callback) {
-        return this[kAdapter].get(key).then((result) => {
+    /**
+     * Helper for increment and decrement operations.
+     * @param key - Cache key identifier
+     * @param value - Step amount
+     * @param callback - Math modifier
+     * @returns New value or false
+     */
+    async [kIncrementOrDecrement](key: string, value: number, callback: (current: number) => number): Promise<number | false> {
+        return this[kAdapter].get(key).then((result: any) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
-                this.forget(key)
-                return false
+                this.forget(key);
+                return false;
             }
             if (result.value === undefined) {
-                return false
+                return false;
             }
-            const currentValue = parseInt(result.value)
+            const currentValue = parseInt(result.value);
             if (isNaN(currentValue)) {
-                return false
+                return false;
             }
-            const newValue = callback(currentValue)
+            const newValue = callback(currentValue);
             return this.put(key, newValue, result.expiration)
                 .then(res => res === true ? newValue : false)
-                .catch(err => false)
+                .catch(() => false);
         })
-            .catch(err => false)
+            .catch(() => false);
     }
 
     /**
-     * increment method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @returns {any}
+     * Increment the value of an item in the cache.
+     * @param key - Cache key identifier
+     * @param value - Increment step
+     * @returns New value or false
      */
-    async increment(key: string, value: number = 1) {
-        return this[kIncrementOrDecrement](key, value, (currentValue) => {
-            return currentValue + value
+    async increment(key: string, value: number = 1): Promise<number | false> {
+        return this[kIncrementOrDecrement](key, value, (currentValue: number) => {
+            return currentValue + value;
         })
-            .catch(err => false)
+            .catch(() => false);
     }
 
     /**
-     * decrement method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @returns {any}
+     * Decrement the value of an item in the cache.
+     * @param key - Cache key identifier
+     * @param value - Decrement step
+     * @returns New value or false
      */
-    async decrement(key: string, value: number = 1) {
-        return this[kIncrementOrDecrement](key, value, (currentValue) => {
-            return currentValue - value
+    async decrement(key: string, value: number = 1): Promise<number | false> {
+        return this[kIncrementOrDecrement](key, value, (currentValue: number) => {
+            return currentValue - value;
         })
-            .catch(err => false)
+            .catch(() => false);
     }
 
     /**
-     * forever method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @returns {any}
+     * Store an item in the cache indefinitely.
+     * @typeParam T - Value type
+     * @param key - Cache key identifier
+     * @param value - Value to cache
+     * @returns True if saved
      */
-    async forever(key: string, value: any) {
-        return this.put(key, value, Infinity)
+    async forever<T = unknown>(key: string, value: T): Promise<boolean> {
+        return this.put(key, value, Infinity);
     }
 
     /**
-     * remember method.
-     * @async
-     * @param {*} key
-     * @param {*} seconds
-     * @param {*} cb
-     * @returns {any}
+     * Get an item from the cache, or execute the given Closure and store the result.
+     * @typeParam T - Result type
+     * @param key - Cache key identifier
+     * @param seconds - Duration in seconds or Date expiration
+     * @param cb - Computation callback
+     * @returns Cached or newly computed value
      */
-    async remember(key: string, seconds: number = 0, cb: any) {
-        if (typeof cb != 'function') {
-            throw Error('Callback is required.')
+    async remember<T = unknown>(key: string, seconds: number | Date = 0, cb: Function): Promise<T> {
+        if (typeof cb !== 'function') {
+            throw Error('Callback is required.');
         }
-        return this.get(key).then(async res => {
+        return this.get<T>(key).then(async (res) => {
             if (res == null) {
-                if (cb.length == 1) {
-                    res = Promise.fromCallback(cb)
+                let computed: any;
+                if (cb.length === 1) {
+                    computed = Promise.fromCallback(cb as any);
                 } else {
-                    res = cb()
+                    computed = cb();
                 }
 
-                res = await Promise.resolve(res)
+                computed = await Promise.resolve(computed);
 
-                if (res) {
-                    await this.put(key, res, getSeconds(seconds))
+                if (computed) {
+                    await this.put(key, computed, getSeconds(seconds));
                 }
+                return computed as T;
             }
-            return res
-        })
+            return res;
+        });
     }
 
     /**
-     * rememberForever method.
-     * @async
-     * @param {*} key
-     * @param {*} cb
-     * @returns {any}
+     * Get an item from the cache, or execute the given Closure and store the result indefinitely.
+     * @typeParam T - Result type
+     * @param key - Cache key identifier
+     * @param cb - Computation callback
+     * @returns Cached or newly computed value
      */
-    async rememberForever(key: string, cb: any) {
-        if (typeof cb != 'function') {
-            throw Error('Callback should be required.')
+    async rememberForever<T = unknown>(key: string, cb: Function): Promise<T> {
+        if (typeof cb !== 'function') {
+            throw Error('Callback should be required.');
         }
-        return this.remember(key, Infinity, cb)
+        return this.remember<T>(key, Infinity, cb);
     }
 
     /**
-     * forget method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Remove an item from the cache.
+     * @param key - Cache key identifier
+     * @returns True if deleted
      */
-    async forget(key: string) {
-        if (this[kEnabled] == false) {
-            return true
+    async forget(key: string): Promise<boolean> {
+        if (this[kEnabled] === false) {
+            return true;
         }
-        return this[kAdapter].forget(key).then(res => true).catch(err => false)
+        return this[kAdapter].forget(key).then(() => true).catch(() => false);
     }
 
     /**
-     * flush method.
-     * @async
-     * @returns {any}
+     * Wipe clean the entire cache.
+     * @returns True if flushed
      */
-    async flush() {
-        if (this[kEnabled] == false) {
-            return true
+    async flush(): Promise<boolean> {
+        if (this[kEnabled] === false) {
+            return true;
         }
-        return this[kAdapter].flush().then(res => true).catch(err => false)
+        return this[kAdapter].flush().then(() => true).catch(() => false);
     }
 
 }
 
-module.exports = Cache
+export = Cache;

@@ -1,50 +1,56 @@
+import InteractsWithTime from '@ostro/support/interactsWithTime';
+import type { ICacheRepository } from '@ostro/contracts/cache/repositry';
 
-const InteractsWithTime = require('@ostro/support/interactsWithTime');
-const is_null = (val) => val == null;
+const is_null = (val: unknown): boolean => val == null;
 
 /**
  * Class RateLimiter.
  */
 class RateLimiter extends InteractsWithTime {
 
-    $cache;
+    $cache: ICacheRepository;
 
-    $limiters = {};
+    $limiters: Record<string, Function> = {};
 
     /**
      * Create a new instance.
-     * @param {*} $cache
+     * @param $cache - Cache repository instance
      */
-    constructor($cache: any) {
+    constructor($cache: ICacheRepository) {
         super();
         this.$cache = $cache;
     }
 
-    for($name, $callback) {
+    /**
+     * Register a named limiter configuration.
+     * @param $name - Limiter name
+     * @param $callback - Limiter callback
+     * @returns Fluent instance
+     */
+    for($name: string, $callback: Function): this {
         this.$limiters[$name] = $callback;
 
         return this;
     }
 
     /**
-     * limiter method.
-     * @param {*} $name
-     * @returns {any}
+     * Retrieve a named limiter callback.
+     * @param $name - Limiter name
+     * @returns Limiter callback or null
      */
-    limiter($name: string) {
+    limiter($name: string): Function | null {
         return this.$limiters[$name] ?? null;
     }
 
     /**
-     * attempt method.
-     * @async
-     * @param {*} $key
-     * @param {*} $maxAttempts
-     * @param {*} $callback
-     * @param {*} $decaySeconds
-     * @returns {any}
+     * Attempt to execute a callback within rate limits.
+     * @param $key - Cache key identifier
+     * @param $maxAttempts - Maximum attempts allowed
+     * @param $callback - Action callback
+     * @param $decaySeconds - Decay time in seconds
+     * @returns Hit count or false if limit reached
      */
-    async attempt($key: string, $maxAttempts: number, $callback: Function, $decaySeconds: number = 60) {
+    async attempt($key: string, $maxAttempts: number, $callback: Function, $decaySeconds: number = 60): Promise<number | false> {
         if (await this.tooManyAttempts($key, $maxAttempts)) {
             return false;
         }
@@ -54,17 +60,15 @@ class RateLimiter extends InteractsWithTime {
         }
 
         return this.hit($key, $decaySeconds);
-
     }
 
     /**
-     * tooManyAttempts method.
-     * @async
-     * @param {*} $key
-     * @param {*} $maxAttempts
-     * @returns {any}
+     * Determine if given key has exceeded max attempts.
+     * @param $key - Cache key identifier
+     * @param $maxAttempts - Maximum attempts allowed
+     * @returns True if limit exceeded
      */
-    async tooManyAttempts($key: string, $maxAttempts: number) {
+    async tooManyAttempts($key: string, $maxAttempts: number): Promise<boolean> {
         if (await this.attempts($key) >= $maxAttempts) {
             if (await this.$cache.has(this.cleanRateLimiterKey($key) + ':timer')) {
                 return true;
@@ -77,13 +81,12 @@ class RateLimiter extends InteractsWithTime {
     }
 
     /**
-     * hit method.
-     * @async
-     * @param {*} $key
-     * @param {*} $decaySeconds
-     * @returns {any}
+     * Increment the counter for a given key.
+     * @param $key - Cache key identifier
+     * @param $decaySeconds - Decay time in seconds
+     * @returns Hits count
      */
-    async hit($key: string, $decaySeconds: number = 60) {
+    async hit($key: string, $decaySeconds: number = 60): Promise<number> {
         $key = this.cleanRateLimiterKey($key);
 
         await this.$cache.put(
@@ -93,41 +96,40 @@ class RateLimiter extends InteractsWithTime {
             await this.$cache.put($key, 0, $decaySeconds);
         }
 
-        const $hits = await this.$cache.increment($key);
+        const $hits = (await this.$cache.increment($key)) as number;
 
         return $hits;
     }
 
     /**
-     * attempts method.
-     * @param {*} $key
-     * @returns {any}
+     * Get the number of attempts for the given key.
+     * @param $key - Cache key identifier
+     * @returns Number of attempts
      */
-    attempts($key: string) {
+    attempts($key: string): Promise<number> {
         $key = this.cleanRateLimiterKey($key);
 
-        return this.$cache.get($key, 0);
+        return this.$cache.get($key, 0) as Promise<number>;
     }
 
     /**
-     * resetAttempts method.
-     * @param {*} $key
-     * @returns {any}
+     * Reset the number of attempts for the given key.
+     * @param $key - Cache key identifier
+     * @returns True if reset succeeded
      */
-    resetAttempts($key: string) {
+    resetAttempts($key: string): Promise<boolean> {
         $key = this.cleanRateLimiterKey($key);
 
         return this.$cache.forget($key);
     }
 
     /**
-     * remaining method.
-     * @async
-     * @param {*} $key
-     * @param {*} $maxAttempts
-     * @returns {any}
+     * Get the number of remaining attempts.
+     * @param $key - Cache key identifier
+     * @param $maxAttempts - Maximum attempts allowed
+     * @returns Remaining attempts
      */
-    async remaining($key: string, $maxAttempts: number) {
+    async remaining($key: string, $maxAttempts: number): Promise<number> {
         $key = this.cleanRateLimiterKey($key);
 
         const $attempts = await this.attempts($key);
@@ -136,22 +138,21 @@ class RateLimiter extends InteractsWithTime {
     }
 
     /**
-     * retriesLeft method.
-     * @param {*} $key
-     * @param {*} $maxAttempts
-     * @returns {any}
+     * Alias for remaining().
+     * @param $key - Cache key identifier
+     * @param $maxAttempts - Maximum attempts allowed
+     * @returns Remaining attempts
      */
-    retriesLeft($key: string, $maxAttempts: number) {
+    retriesLeft($key: string, $maxAttempts: number): Promise<number> {
         return this.remaining($key, $maxAttempts);
     }
 
-
     /**
-     * clear method.
-     * @param {*} $key
-     * @returns {any}
+     * Clear the hits and timer for the key.
+     * @param $key - Cache key identifier
+     * @returns True if clear succeeded
      */
-    clear($key: string) {
+    clear($key: string): Promise<boolean> {
         $key = this.cleanRateLimiterKey($key);
 
         this.resetAttempts($key);
@@ -160,24 +161,24 @@ class RateLimiter extends InteractsWithTime {
     }
 
     /**
-     * availableIn method.
-     * @async
-     * @param {*} $key
-     * @returns {any}
+     * Get the number of seconds until the "key" is accessible again.
+     * @param $key - Cache key identifier
+     * @returns Remaining seconds
      */
-    async availableIn($key: string) {
+    async availableIn($key: string): Promise<number> {
         $key = this.cleanRateLimiterKey($key);
-        return Math.max(0, await this.$cache.get($key + ':timer') - this.currentTime());
+        const timerVal = ((await this.$cache.get($key + ':timer')) as number) || 0;
+        return Math.max(0, timerVal - this.currentTime());
     }
 
     /**
-     * cleanRateLimiterKey method.
-     * @param {*} $key
-     * @returns {any}
+     * Clean the rate limiter key from HTML entities.
+     * @param $key - Rate limiter key
+     * @returns Sanitized key
      */
-    cleanRateLimiterKey($key: string) {
+    cleanRateLimiterKey($key: string): string {
         return $key.replace(/&([a-z])[a-z]+;/ig, '$1');
     }
 }
 
-module.exports = RateLimiter
+export = RateLimiter;

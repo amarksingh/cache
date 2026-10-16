@@ -1,35 +1,42 @@
-const memcached  = require('memjs')
-const kConnection = Symbol('connection')
-const kConfig = Symbol('config')
+import memcached from 'memjs';
+
+const kConnection: unique symbol = Symbol('connection');
+const kConfig: unique symbol = Symbol('config');
 
 /**
  * Class MemCache.
  */
 class MemCache {
 
+    [kConnection]?: any;
+    [kConfig]: Record<string, any>;
+
     /**
      * Create a new instance.
-     * @param {*} $config
+     * @param $config - Memcached configuration object
      */
     constructor($config: Record<string, any>) {
-        this[kConfig] = $config
-        if(typeof this[kConfig] == 'object'){
-            this[kConfig].options = {}
+        this[kConfig] = $config;
+        if (typeof this[kConfig] == 'object' && this[kConfig] !== null) {
+            this[kConfig].options = {};
         }
-        return this
     }
 
     /**
-     * getConnection method.
-     * @returns {any}
+     * Get or create Memcached connection.
+     * @returns Memcached client connection
      */
-    getConnection() {
+    getConnection(): any {
         if (!this[kConnection]) {
-            let server = this[kConfig]['server']
-            this[kConnection] = memcached.Client.create(server['host']+':'+server['port'],{username:server['user'],password:server['password'],...this[kConfig].options})
+            const server = this[kConfig]['server'];
+            this[kConnection] = (memcached as any).Client.create(
+                server['host'] + ':' + server['port'],
+                { username: server['user'], password: server['password'], ...this[kConfig].options }
+            );
         }
-        return this[kConnection]
+        return this[kConnection];
     }
 
 }
-module.exports = MemCache
+
+export = MemCache;

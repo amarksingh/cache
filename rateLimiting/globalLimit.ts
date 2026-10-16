@@ -1,17 +1,6 @@
-const Limit = require('./limit');
-/**
- * Class GlobalLimit.
- */
-class GlobalLimit extends Limit {
+import Limit from './limit';
 
-    /**
-     * Create a new instance.
-     * @param {*} $maxAttempts
-     * @param {*} $decayMinutes
-     */
-    constructor($maxAttempts: number, $decayMinutes: number = 1) {
-        super('', $maxAttempts, $decayMinutes);
-    }
-}
+const GlobalLimit = Limit.GlobalLimit;
+type GlobalLimit = Limit.GlobalLimit;
 
-module.exports = GlobalLimit;
+export = GlobalLimit;

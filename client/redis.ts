@@ -1,33 +1,37 @@
-const redis = require('redis')
-const kConnection = Symbol('connection')
-const kConfig = Symbol('config')
+import redis from 'redis';
+
+const kConnection: unique symbol = Symbol('connection');
+const kConfig: unique symbol = Symbol('config');
 
 /**
  * Class RedisClient.
  */
 class RedisClient {
 
+    [kConnection]?: any;
+    [kConfig]: Record<string, any>;
+
     /**
      * Create a new instance.
-     * @param {*} $config
+     * @param $config - Redis configuration object
      */
     constructor($config: Record<string, any>) {
-        this[kConfig] = $config
-        return this
+        this[kConfig] = $config;
     }
 
     /**
-     * getConnection method.
-     * @returns {any}
+     * Get or create Redis connection.
+     * @returns Redis connection instance
      */
-    getConnection() {
+    getConnection(): any {
         if (!this[kConnection]) {
-            let server = this[kConfig]['server']
-            this[kConnection] = redis.createClient(server['port'],server['host'],server)
-            this[kConnection].auth(server['password'])
+            const server = this[kConfig]['server'];
+            this[kConnection] = (redis as any).createClient(server['port'], server['host'], server);
+            this[kConnection].auth(server['password']);
         }
-        return this[kConnection]
+        return this[kConnection];
     }
 
 }
-module.exports = RedisClient
+
+export = RedisClient;

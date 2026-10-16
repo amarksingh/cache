@@ -4,47 +4,43 @@
 class NullStore {
 
     /**
-     * get method.
-     * @async
-     * @param {*} key
-     * @param {*} defaultValue
-     * @returns {any}
+     * Retrieve an item from the cache by key.
+     * @param key - Cache key identifier
+     * @param defaultValue - Default value if not found
+     * @returns Null always
      */
-    async get(key: string, defaultValue: any = null) {
-        return null
+    async get(key: string, defaultValue: any = null): Promise<null> {
+        return null;
     }
 
     /**
-     * put method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @param {*} seconds
-     * @returns {any}
+     * Store an item in the cache for a given number of seconds.
+     * @param key - Cache key identifier
+     * @param value - Value to cache
+     * @param seconds - Duration in seconds
+     * @returns True always
      */
-    async put(key: string, value: any, seconds: number = 0) {
-        return true
+    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+        return true;
     }
 
     /**
-     * forget method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Remove an item from the cache.
+     * @param key - Cache key identifier
+     * @returns True always
      */
-    async forget(key: string) {
-        return true
+    async forget(key: string): Promise<boolean> {
+        return true;
     }
 
     /**
-     * flush method.
-     * @async
-     * @returns {any}
+     * Remove all items from the cache.
+     * @returns True always
      */
-    async flush() {
-        return true
+    async flush(): Promise<boolean> {
+        return true;
     }
 
 }
 
-module.exports = NullStore
+export = NullStore;

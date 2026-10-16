@@ -1,192 +1,196 @@
-const path = require('path')
-const url = require('url')
-const crypto = require('crypto')
-const fs = require('fs-extra')
-const { valueType } = require('@ostro/support/function')
-const kConfig = Symbol('config')
-const kPrefix = Symbol('prefix')
-const kRootPath = Symbol('rootPah')
-const kRootUrl = Symbol('rootUrl')
+import path from 'path';
+import url from 'url';
+import crypto from 'crypto';
+import fs from 'fs-extra';
+import { valueType } from '@ostro/support/function';
+
+const kConfig: unique symbol = Symbol('config');
+const kPrefix: unique symbol = Symbol('prefix');
+const kRootPath: unique symbol = Symbol('rootPath');
+const kRootUrl: unique symbol = Symbol('rootUrl');
 
 /**
  * Class StoreHelper.
  */
 class StoreHelper {
 
+    [kConfig]: Record<string, any>;
+    [kPrefix]: string;
+    [kRootPath]?: string;
+    [kRootUrl]?: string;
+
     /**
      * Create a new instance.
-     * @param {*} config
-     * @param {*} prefix
+     * @param config - Adapter configuration
+     * @param prefix - Key prefix
      */
-    constructor(config: Record<string, any>, prefix: string = '') {
+    constructor(config: Record<string, any> = {}, prefix: string = '') {
         this[kConfig] = config;
         this[kPrefix] = prefix;
     }
 
     /**
-     * getConfig method.
-     * @returns {any}
+     * Get store configuration.
+     * @returns Configuration object or null
      */
-    getConfig() {
-        return this[kConfig] || null
+    getConfig(): Record<string, any> | null {
+        return this[kConfig] || null;
     }
 
     /**
-     * setRootUrl method.
-     * @param {*} root
-     * @returns {any}
+     * Set root URL.
+     * @param root - Base URL
      */
-    setRootUrl(root: any) {
-        this[kRootUrl] = url.resolve(root, '')
+    setRootUrl(root: string): void {
+        this[kRootUrl] = url.resolve(root, '');
     }
 
     /**
-     * setRootPath method.
-     * @param {*} root
-     * @returns {any}
+     * Set root storage path and ensure directory exists.
+     * @param root - Root directory path
      */
-    setRootPath(root: any) {
-        this[kRootPath] = path.normalize(root)
+    setRootPath(root: string): void {
+        this[kRootPath] = path.normalize(root);
         fs.mkdirSync(path.normalize(this[kRootPath]), {
             recursive: true
-        })
+        });
     }
 
     /**
-     * getPrefix method.
-     * @returns {any}
+     * Get prefix string.
+     * @returns Prefix
      */
-    getPrefix() {
-        return this[kPrefix] || ''
+    getPrefix(): string {
+        return this[kPrefix] || '';
     }
 
     /**
-     * applyDotPrefix method.
-     * @param {*} key
-     * @returns {any}
+     * Apply dot prefix to key.
+     * @param key - Cache key
+     * @returns Prefixed key
      */
-    applyDotPrefix(key: string = '') {
-        return this.getPrefix() + '.' + key
+    applyDotPrefix(key: string = ''): string {
+        return this.getPrefix() + '.' + key;
     }
 
     /**
-     * getRootPath method.
-     * @returns {any}
+     * Get root storage path.
+     * @returns Root directory path
      */
-    getRootPath() {
-        return this[kRootPath]
+    getRootPath(): string | undefined {
+        return this[kRootPath];
     }
 
     /**
-     * applyPathPrefix method.
-     * @param {*} dest
-     * @returns {any}
+     * Apply path prefix with md5 hash.
+     * @param dest - Destination key
+     * @returns Absolute path to file
      */
-    applyPathPrefix(dest: any) {
-        return path.resolve(this[kRootPath], crypto.createHash('md5').update(this.getPrefix() + '_' + dest).digest('hex'))
+    applyPathPrefix(dest: string): string {
+        return path.resolve(this[kRootPath] || '', crypto.createHash('md5').update(this.getPrefix() + '_' + dest).digest('hex'));
     }
 
     /**
-     * getRootUrl method.
-     * @returns {any}
+     * Get root URL.
+     * @returns Root URL string
      */
-    getRootUrl() {
-        return this[kRootUrl]
+    getRootUrl(): string | undefined {
+        return this[kRootUrl];
     }
 
     /**
-     * applyUrlPrefix method.
-     * @param {*} dest
-     * @returns {any}
+     * Apply URL prefix.
+     * @param dest - Destination path
+     * @returns Resolved URL
      */
-    applyUrlPrefix(dest: string = '/') {
-        return url.resolve(([this[kRootUrl], dest].join('/')), '')
+    applyUrlPrefix(dest: string = '/'): string {
+        return url.resolve(([this[kRootUrl], dest].join('/')), '');
     }
 
     /**
-     * ensureDirectory method.
-     * @param {*} dir
-     * @param {*} callback
-     * @returns {any}
+     * Ensure directory exists asynchronously.
+     * @param dir - Directory path
+     * @param callback - Callback on completion
      */
-    ensureDirectory(dir: any, callback: Function) {
-        fs.ensureDir(dir, callback)
+    ensureDirectory(dir: string, callback?: (err: Error | null) => void): void {
+        (fs as any).ensureDir(dir, callback);
     }
 
     /**
-     * parsePath method.
-     * @param {*} dest
-     * @returns {any}
+     * Parse path into components.
+     * @param dest - Path string
+     * @returns Parsed path object
      */
-    parsePath(dest: any) {
-        return path.parse(dest)
+    parsePath(dest: string): path.ParsedPath {
+        return path.parse(dest);
     }
 
     /**
-     * dirname method.
-     * @param {*} dest
-     * @returns {any}
+     * Get directory name of path.
+     * @param dest - Path string
+     * @returns Directory path
      */
-    dirname(dest: any) {
-        return this.parsePath(dest).dir
+    dirname(dest: string): string {
+        return this.parsePath(dest).dir;
     }
 
     /**
-     * getContent method.
-     * @param {*} content
-     * @returns {any}
+     * Extract content item if array.
+     * @param content - Content or array of content
+     * @returns Extracted content
      */
-    getContent(content: any) {
+    getContent(content: any): any {
         if (Array.isArray(content))
-            return content[0]
+            return content[0];
         else
-            return content
+            return content;
     }
 
     /**
-     * getBufferData method.
-     * @param {*} content
-     * @returns {any}
+     * Extract buffer data from content.
+     * @param content - Content container
+     * @returns Buffer data
      */
-    getBufferData(content: any) {
-        return this.getContent(content).buffer
+    getBufferData(content: any): any {
+        return this.getContent(content).buffer;
     }
 
     /**
-     * valueType method.
-     * @param {*} value
-     * @returns {any}
+     * Determine value type.
+     * @param value - Value to check
+     * @returns Type string
      */
-    valueType(value: any) {
+    valueType(value: unknown): string {
         return valueType(value);
     }
 
     /**
-     * serializeValue method.
-     * @param {*} value
-     * @returns {any}
+     * Serialize value and detect its type.
+     * @param value - Value to serialize
+     * @returns Object with serialized value and value type
      */
-    serializeValue(value: any) {
-        let dataType = this.valueType(value)
+    serializeValue(value: unknown): { serializedValue: string; valueType: string } {
+        let dataType: string = this.valueType(value);
         return {
-            serializedValue: dataType != 'string' ? JSON.stringify(value) : value,
+            serializedValue: dataType != 'string' ? JSON.stringify(value) : (value as string),
             valueType: dataType
-        }
+        };
     }
 
     /**
-     * parseValue method.
-     * @param {*} obj
-     * @returns {any}
+     * Parse cached payload back to original value.
+     * @param obj - Cached object or string or buffer
+     * @returns Parsed cache payload
      */
-    parseValue(obj: any) {
-        obj = Buffer.isBuffer(obj) ? obj.toString() : obj
-        obj = typeof obj == 'string' ? JSON.parse(obj) : obj
+    parseValue(obj: any): any {
+        obj = Buffer.isBuffer(obj) ? obj.toString() : obj;
+        obj = typeof obj == 'string' ? JSON.parse(obj) : obj;
         if (['json', 'array', 'number'].includes(obj.valueType)) {
-            obj.value = JSON.parse(obj.value)
+            obj.value = JSON.parse(obj.value);
         }
-        obj.expiration = Number(obj.expiration)
-        return obj
+        obj.expiration = Number(obj.expiration);
+        return obj;
     }
 }
-module.exports = StoreHelper
+
+export = StoreHelper;

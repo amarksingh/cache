@@ -1,78 +1,75 @@
-const StoreHelper = require('./StoreHelper');
-const kStorage = Symbol('storage');
-const { secondsToMs } = require('../utils')
+import StoreHelper from './StoreHelper';
+import { secondsToMs } from '../utils';
+
+const kStorage: unique symbol = Symbol('storage');
 
 /**
  * Class ObjectStore.
  */
 class ObjectStore extends StoreHelper {
 
+    [kStorage]: Record<string, { value: any; expiration: number }>;
+
     /**
      * Create a new instance.
-     * @param {*} $config
+     * @param $config - Storage configuration object
      */
     constructor($config: Record<string, any>) {
-        super($config)
-        this[kStorage] = Object.create(null)
+        super($config);
+        this[kStorage] = Object.create(null);
     }
 
     /**
-     * get method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Retrieve an item from the cache by key.
+     * @param key - Cache key identifier
+     * @returns Cached item
      */
-    async get(key: string) {
-        let cache = this[kStorage][this.applyDotPrefix(key)]
+    async get(key: string): Promise<{ value: any; expiration: number }> {
+        const cache = this[kStorage][this.applyDotPrefix(key)];
         if (cache === undefined) {
-            return Promise.reject()
+            return Promise.reject();
         }
         if (Date.now() / 1000 >= cache.expiration) {
-            this.forget(key)
-            return Promise.reject()
+            this.forget(key);
+            return Promise.reject();
         }
-        return Promise.resolve(cache)
+        return Promise.resolve(cache);
     }
 
     /**
-     * put method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @param {*} seconds
-     * @returns {any}
+     * Store an item in the cache for a given number of seconds.
+     * @param key - Cache key identifier
+     * @param value - Value to cache
+     * @param seconds - Duration in seconds
+     * @returns True if saved
      */
-    async put(key: string, value: any, seconds: number = 0) {
-        let expiration = secondsToMs(seconds);
+    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+        const expiration = secondsToMs(seconds);
         this[kStorage][this.applyDotPrefix(key)] = {
             value: value,
             expiration: expiration
-        }
-        return true
+        };
+        return true;
     }
 
     /**
-     * forget method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Remove an item from the cache.
+     * @param key - Cache key identifier
+     * @returns True if forgotten
      */
-    async forget(key: string) {
-        delete this[kStorage][this.applyDotPrefix(key)]
-        return Promise.resolve(true)
+    async forget(key: string): Promise<boolean> {
+        delete this[kStorage][this.applyDotPrefix(key)];
+        return Promise.resolve(true);
     }
 
     /**
-     * flush method.
-     * @async
-     * @returns {any}
+     * Remove all items from the cache.
+     * @returns True if flushed
      */
-    async flush() {
-
-        this[kStorage] = {}
-        return Promise.resolve(true)
-
+    async flush(): Promise<boolean> {
+        this[kStorage] = {};
+        return Promise.resolve(true);
     }
 }
 
-module.exports = ObjectStore
+export = ObjectStore;

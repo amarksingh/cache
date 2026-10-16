@@ -1,6 +1,7 @@
-const fs = require('fs-extra')
-const StoreHelper = require('./StoreHelper')
-const { secondsToMs } = require('../utils')
+import fs from 'fs-extra';
+import StoreHelper from './StoreHelper';
+import { secondsToMs } from '../utils';
+
 /**
  * Class FileStore.
  */
@@ -8,67 +9,63 @@ class FileStore extends StoreHelper {
 
     /**
      * Create a new instance.
-     * @param {*} $root
-     * @param {*} $config
-     * @param {*} $prefix
+     * @param $root - Root directory path
+     * @param $config - Storage configuration object
+     * @param $prefix - Key prefix string
      */
-    constructor($root: any, $config: Record<string, any>, $prefix: any) {
-        super($config, $prefix)
-        this.setRootPath($root)
+    constructor($root: string, $config: Record<string, any>, $prefix: string) {
+        super($config, $prefix);
+        this.setRootPath($root);
     }
 
     /**
-     * get method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Retrieve an item from the cache by key.
+     * @param key - Cache key identifier
+     * @returns Parsed cache payload
      */
-    async get(key: string) {
+    async get(key: string): Promise<any> {
         return fs.readJson(this.applyPathPrefix(key)).then((result) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
-                this.forget(key)
-                return Promise.reject()
+                this.forget(key);
+                return Promise.reject();
             }
-            return this.parseValue(result)
-        })
+            return this.parseValue(result);
+        });
     }
 
     /**
-     * put method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @param {*} seconds
-     * @returns {any}
+     * Store an item in the cache for a given number of seconds.
+     * @param key - Cache key identifier
+     * @param value - Value to cache
+     * @param seconds - Duration in seconds
+     * @returns True if written
      */
-    async put(key: string, value: any, seconds: number = 0) {
-        let { serializedValue, valueType } = this.serializeValue(value)
+    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+        const { serializedValue, valueType } = this.serializeValue(value);
         return fs.writeJson(this.applyPathPrefix(key), ({
             value: serializedValue,
             valueType: valueType,
             expiration: secondsToMs(seconds).toString()
         }))
-            .then(result => true)
+            .then(() => true);
     }
 
     /**
-     * forget method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Remove an item from the cache.
+     * @param key - Cache key identifier
+     * @returns Promise resolving on remove
      */
-    async forget(key: string) {
-        return fs.remove(this.applyPathPrefix(key))
+    async forget(key: string): Promise<void> {
+        return fs.remove(this.applyPathPrefix(key));
     }
 
     /**
-     * flush method.
-     * @async
-     * @returns {any}
+     * Remove all items from the cache.
+     * @returns Promise resolving on directory empty
      */
-    async flush() {
-        return fs.emptyDir(this.getRootPath())
+    async flush(): Promise<void> {
+        return fs.emptyDir(this.getRootPath() || '');
     }
 }
 
-module.exports = FileStore
+export = FileStore;

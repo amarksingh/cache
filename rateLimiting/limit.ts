@@ -1,14 +1,18 @@
-
 /**
  * Class Limit.
  */
 class Limit {
 
+    $key: string;
+    $maxAttempts: number;
+    $decayMinutes: number;
+    $responseCallback?: Function;
+
     /**
      * Create a new instance.
-     * @param {*} $key
-     * @param {*} $maxAttempts
-     * @param {*} $decayMinutes
+     * @param $key - Limiter key identifier
+     * @param $maxAttempts - Maximum allowed attempts
+     * @param $decayMinutes - Decay duration in minutes
      */
     constructor($key: string = '', $maxAttempts: number = 60, $decayMinutes: number = 1) {
         this.$key = $key;
@@ -16,81 +20,102 @@ class Limit {
         this.$decayMinutes = $decayMinutes;
     }
 
-
     /**
-     * perMinute method.
-     * @static
-     * @param {*} $maxAttempts
-     * @returns {any}
+     * Create rate limit per minute.
+     * @param $maxAttempts - Maximum allowed attempts
+     * @returns New Limit instance
      */
-    static perMinute($maxAttempts: number) {
+    static perMinute($maxAttempts: number): Limit {
         return new this('', $maxAttempts);
     }
 
     /**
-     * perMinutes method.
-     * @static
-     * @param {*} $decayMinutes
-     * @param {*} $maxAttempts
-     * @returns {any}
+     * Create rate limit for given minutes.
+     * @param $decayMinutes - Decay duration in minutes
+     * @param $maxAttempts - Maximum allowed attempts
+     * @returns New Limit instance
      */
-    static perMinutes($decayMinutes: number, $maxAttempts: number) {
+    static perMinutes($decayMinutes: number, $maxAttempts: number): Limit {
         return new this('', $maxAttempts, $decayMinutes);
     }
 
     /**
-     * perHour method.
-     * @static
-     * @param {*} $maxAttempts
-     * @param {*} $decayHours
-     * @returns {any}
+     * Create rate limit per hour.
+     * @param $maxAttempts - Maximum allowed attempts
+     * @param $decayHours - Decay duration in hours
+     * @returns New Limit instance
      */
-    static perHour($maxAttempts: number, $decayHours: number = 1) {
+    static perHour($maxAttempts: number, $decayHours: number = 1): Limit {
         return new this('', $maxAttempts, 60 * $decayHours);
     }
 
     /**
-     * perDay method.
-     * @static
-     * @param {*} $maxAttempts
-     * @param {*} $decayDays
-     * @returns {any}
+     * Create rate limit per day.
+     * @param $maxAttempts - Maximum allowed attempts
+     * @param $decayDays - Decay duration in days
+     * @returns New Limit instance
      */
-    static perDay($maxAttempts: number, $decayDays: number = 1) {
+    static perDay($maxAttempts: number, $decayDays: number = 1): Limit {
         return new this('', $maxAttempts, 60 * 24 * $decayDays);
     }
 
     /**
-     * none method.
-     * @static
-     * @returns {any}
+     * Create an unlimited rate limit.
+     * @returns New Unlimited instance
      */
-    static none() {
-        const Unlimited = require('./unlimited');
-        return new Unlimited;
+    static none(): Limit.Unlimited {
+        return new Limit.Unlimited();
     }
 
     /**
-     * by method.
-     * @param {*} $key
-     * @returns {any}
+     * Set the key for the rate limit.
+     * @param $key - Key identifier
+     * @returns Fluent instance
      */
-    by($key: string) {
+    by($key: string): this {
         this.$key = $key;
 
         return this;
     }
 
     /**
-     * response method.
-     * @param {*} $callback
-     * @returns {any}
+     * Set the response callback.
+     * @param $callback - Custom response callback
+     * @returns Fluent instance
      */
-    response($callback: Function) {
+    response($callback: Function): this {
         this.$responseCallback = $callback;
 
         return this;
     }
 }
 
-module.exports = Limit;
+namespace Limit {
+    /**
+     * Class GlobalLimit.
+     */
+    export class GlobalLimit extends Limit {
+        /**
+         * Create a new GlobalLimit instance.
+         * @param $maxAttempts - Maximum allowed attempts
+         * @param $decayMinutes - Decay duration in minutes
+         */
+        constructor($maxAttempts: number, $decayMinutes: number = 1) {
+            super('', $maxAttempts, $decayMinutes);
+        }
+    }
+
+    /**
+     * Class Unlimited.
+     */
+    export class Unlimited extends GlobalLimit {
+        /**
+         * Create a new Unlimited instance.
+         */
+        constructor() {
+            super(Infinity);
+        }
+    }
+}
+
+export = Limit;

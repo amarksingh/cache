@@ -1,17 +1,21 @@
-const kConnection = Symbol('connection');
-const kTable = Symbol('table');
-const StoreHelper = require('./StoreHelper')
-const { secondsToMs } = require('../utils')
+import StoreHelper from './StoreHelper';
+import { secondsToMs } from '../utils';
+
+const kConnection: unique symbol = Symbol('connection');
+const kTable: unique symbol = Symbol('table');
 
 /**
  * Class Database.
  */
 class Database extends StoreHelper {
 
+    [kTable]: string;
+    [kConnection]: any;
+
     /**
      * Create a new instance.
-     * @param {*} table
-     * @param {*} $connection
+     * @param table - Database table name
+     * @param $connection - Database connection instance
      */
     constructor(table: string, $connection: any) {
         super();
@@ -20,61 +24,59 @@ class Database extends StoreHelper {
     }
 
     /**
-     * get method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Retrieve an item from the cache by key.
+     * @param key - Cache key identifier
+     * @returns Cached item
      */
-    async get(key: string) {
-        return this[kConnection].table(this[kTable]).where({ key }).first().then(res => (res || Promise.reject())).then((result) => {
+    async get(key: string): Promise<any> {
+        return this[kConnection].table(this[kTable]).where({ key }).first().then((res: any) => (res || Promise.reject())).then((result: any) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
-                this.forget(key)
-                return Promise.reject()
+                this.forget(key);
+                return Promise.reject();
             }
             try {
                 result.value = JSON.parse(result.value);
-                return result
-            } catch (e) { return result }
-        })
+                return result;
+            } catch (e) {
+                return result;
+            }
+        });
     }
 
     /**
-     * put method.
-     * @async
-     * @param {*} key
-     * @param {*} value
-     * @param {*} seconds
-     * @returns {any}
+     * Store an item in the cache for a given number of seconds.
+     * @param key - Cache key identifier
+     * @param value - Value to cache
+     * @param seconds - Duration in seconds
+     * @returns True if inserted/updated
      */
-    async put(key: string, value: any, seconds: number = 0) {
-        let { serializedValue, valueType } = this.serializeValue(value)
+    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+        const { serializedValue, valueType } = this.serializeValue(value);
         return this[kConnection].table(this[kTable]).updateOrInsert({ key }, {
             value: serializedValue,
             valueType: valueType,
             expiration: secondsToMs(seconds).toString()
         })
-            .then(result => true)
-            .catch(err => false)
+            .then(() => true)
+            .catch(() => false);
     }
 
     /**
-     * forget method.
-     * @async
-     * @param {*} key
-     * @returns {any}
+     * Remove an item from the cache.
+     * @param key - Cache key identifier
+     * @returns True if deleted
      */
-    async forget(key: string) {
-        return this[kConnection].table(this[kTable]).where({ key }).delete().then(res => true).catch(err => false)
+    async forget(key: string): Promise<boolean> {
+        return this[kConnection].table(this[kTable]).where({ key }).delete().then(() => true).catch(() => false);
     }
 
     /**
-     * flush method.
-     * @async
-     * @returns {any}
+     * Remove all items from the cache table.
+     * @returns True if deleted
      */
-    async flush() {
-        return this[kConnection].table(this[kTable]).delete().then(res => true).catch(err => false)
+    async flush(): Promise<boolean> {
+        return this[kConnection].table(this[kTable]).delete().then(() => true).catch(() => false);
     }
 }
 
-module.exports = Database
+export = Database;
