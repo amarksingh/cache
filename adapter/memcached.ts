@@ -81,4 +81,4 @@ class MemcachedStore extends StoreHelper {
 
 }
 
-export = MemcachedStore;
+export default MemcachedStore;

@@ -1,5 +1,5 @@
-const ServiceProvider = require('@ostro/support/serviceProvider');
-const cacheManager = require('./cacheManager')
+import ServiceProvider from '@ostro/support/serviceProvider';
+import cacheManager from './cacheManager';
 
 /**
  * Class CacheServiceProvider.
@@ -25,4 +25,4 @@ class CacheServiceProvider extends ServiceProvider {
     }
 
 }
-module.exports = CacheServiceProvider
+export default CacheServiceProvider;

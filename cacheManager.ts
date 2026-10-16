@@ -131,4 +131,4 @@ class CacheManager extends Manager {
 
 }
 
-export = CacheManager;
+export default CacheManager;

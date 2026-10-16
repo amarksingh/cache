@@ -258,4 +258,4 @@ class Cache implements ICacheRepository {
 
 }
 
-export = Cache;
+export default Cache;

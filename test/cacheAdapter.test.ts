@@ -1,6 +1,9 @@
-const CacheAdapter = require('../cacheAdapter');
-const NullStore = require('../adapter/null');
-const ObjectStore = require('../adapter/memory');
+const _CacheAdapter = require('../cacheAdapter');
+const CacheAdapter = _CacheAdapter.default || _CacheAdapter;
+const _NullStore = require('../adapter/null');
+const NullStore = _NullStore.default || _NullStore;
+const _ObjectStore = require('../adapter/memory');
+const ObjectStore = _ObjectStore.default || _ObjectStore;
 
 describe('CacheAdapter Unit Tests', () => {
     describe('Disabled Cache', () => {

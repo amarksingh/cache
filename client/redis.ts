@@ -34,4 +34,4 @@ class RedisClient {
 
 }
 
-export = RedisClient;
+export default RedisClient;

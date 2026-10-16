@@ -39,4 +39,4 @@ class MemCache {
 
 }
 
-export = MemCache;
+export default MemCache;

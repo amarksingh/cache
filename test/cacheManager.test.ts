@@ -1,4 +1,8 @@
-const CacheManager = require('../cacheManager');
+jest.mock('redis', () => ({ createClient: jest.fn(() => ({})) }), { virtual: true });
+jest.mock('memjs', () => ({ Client: { create: jest.fn(() => ({})) } }), { virtual: true });
+
+const _CacheManager = require('../cacheManager');
+const CacheManager = _CacheManager.default || _CacheManager;
 const path = require('path');
 
 describe('CacheManager Unit Tests', () => {

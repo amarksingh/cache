@@ -82,4 +82,4 @@ class RedisStore extends StoreHelper {
 
 }
 
-export = RedisStore;
+export default RedisStore;

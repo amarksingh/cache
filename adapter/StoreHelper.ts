@@ -193,4 +193,4 @@ class StoreHelper {
     }
 }
 
-export = StoreHelper;
+export default StoreHelper;

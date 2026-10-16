@@ -43,4 +43,4 @@ class NullStore {
 
 }
 
-export = NullStore;
+export default NullStore;

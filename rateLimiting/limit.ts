@@ -118,4 +118,4 @@ namespace Limit {
     }
 }
 
-export = Limit;
+export default Limit;

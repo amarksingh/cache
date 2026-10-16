@@ -72,4 +72,4 @@ class ObjectStore extends StoreHelper {
     }
 }
 
-export = ObjectStore;
+export default ObjectStore;

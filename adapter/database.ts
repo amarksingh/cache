@@ -79,4 +79,4 @@ class Database extends StoreHelper {
     }
 }
 
-export = Database;
+export default Database;

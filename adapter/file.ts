@@ -68,4 +68,4 @@ class FileStore extends StoreHelper {
     }
 }
 
-export = FileStore;
+export default FileStore;

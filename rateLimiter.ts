@@ -181,4 +181,4 @@ class RateLimiter extends InteractsWithTime {
     }
 }
 
-export = RateLimiter;
+export default RateLimiter;

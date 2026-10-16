@@ -1,4 +1,4 @@
-const Command = require('@ostro/console/command')
+import Command from '@ostro/console/command';
 /**
  * Class CacheTableCommand.
  */
@@ -44,4 +44,4 @@ class CacheTableCommand extends Command {
     }
 }
 
-module.exports = CacheTableCommand
+export default CacheTableCommand;
