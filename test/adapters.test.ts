@@ -1,8 +1,8 @@
-const _NullStore = require('../adapter/null');
+const _NullStore = require('../src/adapter/null');
 const NullStore = _NullStore.default || _NullStore;
-const _ObjectStore = require('../adapter/memory');
+const _ObjectStore = require('../src/adapter/memory');
 const ObjectStore = _ObjectStore.default || _ObjectStore;
-const _StoreHelper = require('../adapter/StoreHelper');
+const _StoreHelper = require('../src/adapter/StoreHelper');
 const StoreHelper = _StoreHelper.default || _StoreHelper;
 const fs = require('fs-extra');
 const path = require('path');
@@ -157,7 +157,7 @@ describe('Adapter Unit Tests', () => {
     });
 
     describe('FileStore', () => {
-        const _FileStore = require('../adapter/file');
+        const _FileStore = require('../src/adapter/file');
 const FileStore = _FileStore.default || _FileStore;
         const fileDir = path.join(__dirname, 'tmp_file_store');
         let store;
@@ -195,7 +195,7 @@ const FileStore = _FileStore.default || _FileStore;
     });
 
     describe('DatabaseStore', () => {
-        const _DatabaseStore = require('../adapter/database');
+        const _DatabaseStore = require('../src/adapter/database');
 const DatabaseStore = _DatabaseStore.default || _DatabaseStore;
         let dbStore;
         let mockTable;
@@ -250,7 +250,7 @@ const DatabaseStore = _DatabaseStore.default || _DatabaseStore;
     });
 
     describe('RedisStore', () => {
-        const _RedisStore = require('../adapter/redis');
+        const _RedisStore = require('../src/adapter/redis');
 const RedisStore = _RedisStore.default || _RedisStore;
         let redisStore;
         let mockConn;
@@ -284,7 +284,7 @@ const RedisStore = _RedisStore.default || _RedisStore;
     });
 
     describe('MemcachedStore', () => {
-        const _MemcachedStore = require('../adapter/memcached');
+        const _MemcachedStore = require('../src/adapter/memcached');
 const MemcachedStore = _MemcachedStore.default || _MemcachedStore;
         let memStore;
         let mockConn;

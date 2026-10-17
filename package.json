@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "build": "rm -rf build && npx tsc -p tsconfig.build.json",
+    "build": "rm -rf build && npx tsc -p tsconfig.build.json && mkdir -p build/console/stubs && cp src/console/stubs/cache.stub build/console/stubs/",
     "prepublishOnly": "npm run build",
     "test": "npx c8 npx jest"
   },
@@ -45,7 +45,8 @@
   },
   "homepage": "https://github.com/ostrojs/cache#readme",
   "devDependencies": {
-    "typescript": "^5.8.0",
-    "@types/node": "^22.0.0"
+    "@ostro/console": "^2.0.0-alpha.1",
+    "@types/node": "^22.20.5",
+    "typescript": "^5.8.0"
   }
 }

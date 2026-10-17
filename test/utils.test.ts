@@ -1,4 +1,4 @@
-const { promiseAll, getSeconds, secondsToMs } = require('../utils');
+const { promiseAll, getSeconds, secondsToMs } = require('../src/utils');
 
 describe('utils.js Unit Tests', () => {
     describe('promiseAll()', () => {

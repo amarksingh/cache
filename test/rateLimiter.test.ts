@@ -1,4 +1,4 @@
-const _RateLimiter = require('../rateLimiter');
+const _RateLimiter = require('../src/rateLimiter');
 const RateLimiter = _RateLimiter.default || _RateLimiter;
 
 describe('RateLimiter Unit Tests', () => {

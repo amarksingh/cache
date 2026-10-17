@@ -1,8 +1,8 @@
-const _Limit = require('../rateLimiting/limit');
+const _Limit = require('../src/rateLimiting/limit');
 const Limit = _Limit.default || _Limit;
-const _GlobalLimit = require('../rateLimiting/globalLimit');
+const _GlobalLimit = require('../src/rateLimiting/globalLimit');
 const GlobalLimit = _GlobalLimit.default || _GlobalLimit;
-const _Unlimited = require('../rateLimiting/unlimited');
+const _Unlimited = require('../src/rateLimiting/unlimited');
 const Unlimited = _Unlimited.default || _Unlimited;
 
 describe('Rate Limiting Classes', () => {
