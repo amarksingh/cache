@@ -24,7 +24,7 @@ class MemCache {
      * Get or create Memcached connection.
      * @returns Memcached client connection
      */
-    getConnection(): any {
+    public getConnection(): any {
         if (!this[kConnection]) {
             const memcachedModule = require('memjs');
             const memcached = memcachedModule?.default || memcachedModule;

@@ -5,21 +5,21 @@ import Command from '@ostro/console/command';
  */
 class ClearCommand extends Command {
 
-    get $signature(): string {
+    public get $signature(): string {
         return 'cache:clear';
     }
 
-    get $description(): string {
+    public get $description(): string {
         return 'Flush the application cache';
     }
 
-    get $options(): any[] {
+    public get $options(): any[] {
         return [
             this.createOption('--store [store] ', 'The name of the store you would like to clear').default(''),
         ];
     }
 
-    get $arguments(): any[] {
+    public get $arguments(): any[] {
         return [
             this.createArgument('[tag]', 'The cache tags you would like to clear')
         ];
@@ -44,7 +44,7 @@ class ClearCommand extends Command {
      * @async
      * @returns {any}
      */
-    async handle() {
+    public async handle() {
         let $successful = await this.cache().flush();
 
         await this.flushFacades();
@@ -63,7 +63,7 @@ class ClearCommand extends Command {
      * @async
      * @returns {any}
      */
-    async flushFacades() {
+    public async flushFacades() {
         let storageFn = (globalThis as any).storage_path;
         let $storagePath = typeof storageFn === 'function' ? storageFn('framework/cache') : (this.$app?.storagePath ? this.$app.storagePath('framework/cache') : 'storage/framework/cache');
         if (!await this.$files.exists($storagePath)) {
@@ -81,7 +81,7 @@ class ClearCommand extends Command {
      * cache method.
      * @returns {any}
      */
-    cache() {
+    public cache() {
         let $cache = this.$cache.store(this.argument('store'));
         let tags = this.tags();
         return (!tags || tags.length === 0) ? $cache : $cache.tags(tags);
@@ -91,7 +91,7 @@ class ClearCommand extends Command {
      * tags method.
      * @returns {any}
      */
-    tags() {
+    public tags() {
         let tags = this.option('tags');
         return typeof tags === 'string' ? tags.split(',').filter(data => data) : [];
     }

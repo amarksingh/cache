@@ -9,7 +9,7 @@ class NullStore {
      * @param defaultValue - Default value if not found
      * @returns Null always
      */
-    async get(key: string, defaultValue: any = null): Promise<null> {
+    public async get(key: string, defaultValue: any = null): Promise<null> {
         return null;
     }
 
@@ -20,7 +20,7 @@ class NullStore {
      * @param seconds - Duration in seconds
      * @returns True always
      */
-    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+    public async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
         return true;
     }
 
@@ -29,7 +29,7 @@ class NullStore {
      * @param key - Cache key identifier
      * @returns True always
      */
-    async forget(key: string): Promise<boolean> {
+    public async forget(key: string): Promise<boolean> {
         return true;
     }
 
@@ -37,7 +37,7 @@ class NullStore {
      * Remove all items from the cache.
      * @returns True always
      */
-    async flush(): Promise<boolean> {
+    public async flush(): Promise<boolean> {
         return true;
     }
 

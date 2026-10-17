@@ -24,7 +24,7 @@ class ObjectStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns Cached item
      */
-    async get(key: string): Promise<{ value: any; expiration: number }> {
+    public async get(key: string): Promise<{ value: any; expiration: number }> {
         const cache = this[kStorage][this.applyDotPrefix(key)];
         if (cache === undefined) {
             return Promise.reject();
@@ -43,7 +43,7 @@ class ObjectStore extends StoreHelper {
      * @param seconds - Duration in seconds
      * @returns True if saved
      */
-    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+    public async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
         const expiration = secondsToMs(seconds);
         this[kStorage][this.applyDotPrefix(key)] = {
             value: value,
@@ -57,7 +57,7 @@ class ObjectStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns True if forgotten
      */
-    async forget(key: string): Promise<boolean> {
+    public async forget(key: string): Promise<boolean> {
         delete this[kStorage][this.applyDotPrefix(key)];
         return Promise.resolve(true);
     }
@@ -66,7 +66,7 @@ class ObjectStore extends StoreHelper {
      * Remove all items from the cache.
      * @returns True if flushed
      */
-    async flush(): Promise<boolean> {
+    public async flush(): Promise<boolean> {
         this[kStorage] = {};
         return Promise.resolve(true);
     }

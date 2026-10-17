@@ -4,11 +4,11 @@ import Command from '@ostro/console/command';
  */
 class CacheTableCommand extends Command {
 
-    get $signature(): string {
+    public get $signature(): string {
         return 'cache:table';
     }
 
-    get $description(): string {
+    public get $description(): string {
         return 'Create a migration for the cache database table';
     }
 
@@ -29,7 +29,7 @@ class CacheTableCommand extends Command {
      * @async
      * @returns {any}
      */
-    async handle() {
+    public async handle() {
         let $fullPath = await this.createBaseMigration();
 
         await this.$file.put($fullPath, await this.$file.get(__dirname + '/stubs/cache.stub'));
@@ -42,7 +42,7 @@ class CacheTableCommand extends Command {
      * createBaseMigration method.
      * @returns {any}
      */
-    createBaseMigration() {
+    public createBaseMigration() {
         let $name = 'create_cache_table';
 
         let $path = this.$app.databasePath('migrations');

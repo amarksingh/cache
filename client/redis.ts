@@ -21,7 +21,7 @@ class RedisClient {
      * Get or create Redis connection.
      * @returns Redis connection instance
      */
-    getConnection(): any {
+    public getConnection(): any {
         if (!this[kConnection]) {
             const redisModule = require('redis');
             const redis = redisModule?.default || redisModule;

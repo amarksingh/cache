@@ -33,7 +33,7 @@ class StoreHelper {
      * Get store configuration.
      * @returns Configuration object or null
      */
-    getConfig(): Record<string, any> | null {
+    public getConfig(): Record<string, any> | null {
         return this[kConfig] || null;
     }
 
@@ -41,7 +41,7 @@ class StoreHelper {
      * Set root URL.
      * @param root - Base URL
      */
-    setRootUrl(root: string): void {
+    public setRootUrl(root: string): void {
         this[kRootUrl] = url.resolve(root, '');
     }
 
@@ -49,7 +49,7 @@ class StoreHelper {
      * Set root storage path and ensure directory exists.
      * @param root - Root directory path
      */
-    setRootPath(root: string): void {
+    public setRootPath(root: string): void {
         this[kRootPath] = path.normalize(root);
         fs.mkdirSync(path.normalize(this[kRootPath]), {
             recursive: true
@@ -60,7 +60,7 @@ class StoreHelper {
      * Get prefix string.
      * @returns Prefix
      */
-    getPrefix(): string {
+    public getPrefix(): string {
         return this[kPrefix] || '';
     }
 
@@ -69,7 +69,7 @@ class StoreHelper {
      * @param key - Cache key
      * @returns Prefixed key
      */
-    applyDotPrefix(key: string = ''): string {
+    public applyDotPrefix(key: string = ''): string {
         return this.getPrefix() + '.' + key;
     }
 
@@ -77,7 +77,7 @@ class StoreHelper {
      * Get root storage path.
      * @returns Root directory path
      */
-    getRootPath(): string | undefined {
+    public getRootPath(): string | undefined {
         return this[kRootPath];
     }
 
@@ -86,7 +86,7 @@ class StoreHelper {
      * @param dest - Destination key
      * @returns Absolute path to file
      */
-    applyPathPrefix(dest: string): string {
+    public applyPathPrefix(dest: string): string {
         return path.resolve(this[kRootPath] || '', crypto.createHash('md5').update(this.getPrefix() + '_' + dest).digest('hex'));
     }
 
@@ -94,7 +94,7 @@ class StoreHelper {
      * Get root URL.
      * @returns Root URL string
      */
-    getRootUrl(): string | undefined {
+    public getRootUrl(): string | undefined {
         return this[kRootUrl];
     }
 
@@ -103,7 +103,7 @@ class StoreHelper {
      * @param dest - Destination path
      * @returns Resolved URL
      */
-    applyUrlPrefix(dest: string = '/'): string {
+    public applyUrlPrefix(dest: string = '/'): string {
         return url.resolve(([this[kRootUrl], dest].join('/')), '');
     }
 
@@ -121,7 +121,7 @@ class StoreHelper {
      * @param dest - Path string
      * @returns Parsed path object
      */
-    parsePath(dest: string): path.ParsedPath {
+    public parsePath(dest: string): path.ParsedPath {
         return path.parse(dest);
     }
 
@@ -130,7 +130,7 @@ class StoreHelper {
      * @param dest - Path string
      * @returns Directory path
      */
-    dirname(dest: string): string {
+    public dirname(dest: string): string {
         return this.parsePath(dest).dir;
     }
 
@@ -139,7 +139,7 @@ class StoreHelper {
      * @param content - Content or array of content
      * @returns Extracted content
      */
-    getContent(content: any): any {
+    public getContent(content: any): any {
         if (Array.isArray(content))
             return content[0];
         else
@@ -151,7 +151,7 @@ class StoreHelper {
      * @param content - Content container
      * @returns Buffer data
      */
-    getBufferData(content: any): any {
+    public getBufferData(content: any): any {
         return this.getContent(content).buffer;
     }
 
@@ -160,7 +160,7 @@ class StoreHelper {
      * @param value - Value to check
      * @returns Type string
      */
-    valueType(value: unknown): string {
+    public valueType(value: unknown): string {
         return valueType(value);
     }
 
@@ -169,7 +169,7 @@ class StoreHelper {
      * @param value - Value to serialize
      * @returns Object with serialized value and value type
      */
-    serializeValue(value: unknown): { serializedValue: string; valueType: string } {
+    public serializeValue(value: unknown): { serializedValue: string; valueType: string } {
         let dataType: string = this.valueType(value);
         return {
             serializedValue: dataType != 'string' ? JSON.stringify(value) : (value as string),
@@ -182,7 +182,7 @@ class StoreHelper {
      * @param obj - Cached object or string or buffer
      * @returns Parsed cache payload
      */
-    parseValue(obj: any): any {
+    public parseValue(obj: any): any {
         obj = Buffer.isBuffer(obj) ? obj.toString() : obj;
         obj = typeof obj == 'string' ? JSON.parse(obj) : obj;
         if (['json', 'array', 'number'].includes(obj.valueType)) {

@@ -28,7 +28,7 @@ class Database extends StoreHelper {
      * @param key - Cache key identifier
      * @returns Cached item
      */
-    async get(key: string): Promise<any> {
+    public async get(key: string): Promise<any> {
         return this[kConnection].table(this[kTable]).where({ key }).first().then((res: any) => (res || Promise.reject())).then((result: any) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
                 this.forget(key);
@@ -50,7 +50,7 @@ class Database extends StoreHelper {
      * @param seconds - Duration in seconds
      * @returns True if inserted/updated
      */
-    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+    public async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
         const { serializedValue, valueType } = this.serializeValue(value);
         return this[kConnection].table(this[kTable]).updateOrInsert({ key }, {
             value: serializedValue,
@@ -66,7 +66,7 @@ class Database extends StoreHelper {
      * @param key - Cache key identifier
      * @returns True if deleted
      */
-    async forget(key: string): Promise<boolean> {
+    public async forget(key: string): Promise<boolean> {
         return this[kConnection].table(this[kTable]).where({ key }).delete().then(() => true).catch(() => false);
     }
 
@@ -74,7 +74,7 @@ class Database extends StoreHelper {
      * Remove all items from the cache table.
      * @returns True if deleted
      */
-    async flush(): Promise<boolean> {
+    public async flush(): Promise<boolean> {
         return this[kConnection].table(this[kTable]).delete().then(() => true).catch(() => false);
     }
 }

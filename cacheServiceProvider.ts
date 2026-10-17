@@ -10,7 +10,7 @@ class CacheServiceProvider extends ServiceProvider {
      * register method.
      * @returns {any}
      */
-    register() {
+    public register() {
        this.$app.singleton('cache', function(app) {
             return new cacheManager(app);
         });
@@ -21,7 +21,7 @@ class CacheServiceProvider extends ServiceProvider {
      * @async
      * @returns {any}
      */
-    async boot() {
+    public async boot() {
     }
 
 }

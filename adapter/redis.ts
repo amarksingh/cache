@@ -29,7 +29,7 @@ class RedisStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns Parsed cached payload
      */
-    async get(key: string): Promise<any> {
+    public async get(key: string): Promise<any> {
         return this.connection().getAsync(this.applyDotPrefix(key)).then((result: any) => {
             return this.parseValue(result);
         });
@@ -42,7 +42,7 @@ class RedisStore extends StoreHelper {
      * @param seconds - Duration in seconds
      * @returns True if set succeeded
      */
-    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+    public async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
         const prefixedKey = this.applyDotPrefix(key);
         const {
             serializedValue,
@@ -60,7 +60,7 @@ class RedisStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns True if deleted
      */
-    async forget(key: string): Promise<boolean> {
+    public async forget(key: string): Promise<boolean> {
         return this.connection().delAsync(this.applyDotPrefix(key)).then(() => true).catch(() => false);
     }
 
@@ -68,7 +68,7 @@ class RedisStore extends StoreHelper {
      * Remove all items from the cache.
      * @returns True if flushed
      */
-    async flush(): Promise<boolean> {
+    public async flush(): Promise<boolean> {
         return this.connection().flushdbAsync().then(() => true).catch(() => false);
     }
 
@@ -76,7 +76,7 @@ class RedisStore extends StoreHelper {
      * Get or create Redis connection.
      * @returns Promisified Redis connection
      */
-    connection(): any {
+    public connection(): any {
         return this[kConnection] = this[kConnection] ? this[kConnection] : Promise.promisifyAll(this[kClient].getConnection());
     }
 

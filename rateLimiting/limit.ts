@@ -3,9 +3,9 @@
  */
 class Limit {
 
-    $key: string;
-    $maxAttempts: number;
-    $decayMinutes: number;
+    public $key: string;
+    public $maxAttempts: number;
+    public $decayMinutes: number;
     $responseCallback?: Function;
 
     /**
@@ -72,7 +72,7 @@ class Limit {
      * @param $key - Key identifier
      * @returns Fluent instance
      */
-    by($key: string): this {
+    public by($key: string): this {
         this.$key = $key;
 
         return this;
@@ -83,7 +83,7 @@ class Limit {
      * @param $callback - Custom response callback
      * @returns Fluent instance
      */
-    response($callback: Function): this {
+    public response($callback: Function): this {
         this.$responseCallback = $callback;
 
         return this;

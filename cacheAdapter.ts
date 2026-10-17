@@ -29,7 +29,7 @@ class Cache implements ICacheRepository {
      * @param key - Cache key identifier
      * @returns True if key exists and has value
      */
-    async has(key: string): Promise<boolean> {
+    public async has(key: string): Promise<boolean> {
         if (this[kEnabled] === false) {
             return false;
         }
@@ -44,7 +44,7 @@ class Cache implements ICacheRepository {
      * @param defaultValue - Default value if not found
      * @returns Cached value or default value
      */
-    async get<T = unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
+    public async get<T = unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
         if (this[kEnabled] === false) {
             return null;
         }
@@ -60,7 +60,7 @@ class Cache implements ICacheRepository {
      * @param seconds - Duration in seconds or Date expiration
      * @returns True if saved successfully
      */
-    async put<T = unknown>(key: string, value: T, seconds: number | Date = 0): Promise<boolean> {
+    public async put<T = unknown>(key: string, value: T, seconds: number | Date = 0): Promise<boolean> {
         if (this[kEnabled] === false) {
             return true;
         }
@@ -85,7 +85,7 @@ class Cache implements ICacheRepository {
      * @param defaultValue - Default value if not found
      * @returns Cached value or default
      */
-    async pull<T = unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
+    public async pull<T = unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
         return this.get<T>(key, defaultValue).then(async (value) => {
             return this.forget(key).then(() => value).catch(() => null);
         });
@@ -97,7 +97,7 @@ class Cache implements ICacheRepository {
      * @param keys - Array of cache keys
      * @returns Dictionary of cached values
      */
-    async many<T = unknown>(keys: string[]): Promise<Record<string, T | null>> {
+    public async many<T = unknown>(keys: string[]): Promise<Record<string, T | null>> {
         return Promise.all(keys.map(key => this.get<T>(key)))
             .then((values: (T | null)[]) => {
                 let mappedValues: Record<string, T | null> = {};
@@ -114,7 +114,7 @@ class Cache implements ICacheRepository {
      * @param seconds - Duration in seconds or Date expiration
      * @returns Dictionary of results
      */
-    async putMany(object: Record<string, any> = {}, seconds: number | Date = 0): Promise<Record<string, boolean>> {
+    public async putMany(object: Record<string, any> = {}, seconds: number | Date = 0): Promise<Record<string, boolean>> {
         const promisesObj: Record<string, Promise<any>> = {};
         for (let prop in object) {
             promisesObj[prop] = this.put(prop, object[prop], getSeconds(seconds));
@@ -156,7 +156,7 @@ class Cache implements ICacheRepository {
      * @param value - Increment step
      * @returns New value or false
      */
-    async increment(key: string, value: number = 1): Promise<number | false> {
+    public async increment(key: string, value: number = 1): Promise<number | false> {
         return this[kIncrementOrDecrement](key, value, (currentValue: number) => {
             return currentValue + value;
         })
@@ -169,7 +169,7 @@ class Cache implements ICacheRepository {
      * @param value - Decrement step
      * @returns New value or false
      */
-    async decrement(key: string, value: number = 1): Promise<number | false> {
+    public async decrement(key: string, value: number = 1): Promise<number | false> {
         return this[kIncrementOrDecrement](key, value, (currentValue: number) => {
             return currentValue - value;
         })
@@ -183,7 +183,7 @@ class Cache implements ICacheRepository {
      * @param value - Value to cache
      * @returns True if saved
      */
-    async forever<T = unknown>(key: string, value: T): Promise<boolean> {
+    public async forever<T = unknown>(key: string, value: T): Promise<boolean> {
         return this.put(key, value, Infinity);
     }
 
@@ -195,7 +195,7 @@ class Cache implements ICacheRepository {
      * @param cb - Computation callback
      * @returns Cached or newly computed value
      */
-    async remember<T = unknown>(key: string, seconds: number | Date = 0, cb: Function): Promise<T> {
+    public async remember<T = unknown>(key: string, seconds: number | Date = 0, cb: Function): Promise<T> {
         if (typeof cb !== 'function') {
             throw Error('Callback is required.');
         }
@@ -226,7 +226,7 @@ class Cache implements ICacheRepository {
      * @param cb - Computation callback
      * @returns Cached or newly computed value
      */
-    async rememberForever<T = unknown>(key: string, cb: Function): Promise<T> {
+    public async rememberForever<T = unknown>(key: string, cb: Function): Promise<T> {
         if (typeof cb !== 'function') {
             throw Error('Callback should be required.');
         }
@@ -238,7 +238,7 @@ class Cache implements ICacheRepository {
      * @param key - Cache key identifier
      * @returns True if deleted
      */
-    async forget(key: string): Promise<boolean> {
+    public async forget(key: string): Promise<boolean> {
         if (this[kEnabled] === false) {
             return true;
         }
@@ -249,7 +249,7 @@ class Cache implements ICacheRepository {
      * Wipe clean the entire cache.
      * @returns True if flushed
      */
-    async flush(): Promise<boolean> {
+    public async flush(): Promise<boolean> {
         if (this[kEnabled] === false) {
             return true;
         }

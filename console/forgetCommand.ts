@@ -5,15 +5,15 @@ import Command from '@ostro/console/command';
  */
 class ForgetCommand extends Command {
 
-    get $signature(): string {
+    public get $signature(): string {
         return 'cache:forget';
     }
 
-    get $description(): string {
+    public get $description(): string {
         return 'Remove an item from the cache';
     }
 
-    get $arguments(): any[] {
+    public get $arguments(): any[] {
         return [
             this.createArgument('key', 'The key to remove').required(),
             this.createArgument('store', 'The store to remove the key from')
@@ -37,7 +37,7 @@ class ForgetCommand extends Command {
      * @async
      * @returns {any}
      */
-    async handle() {
+    public async handle() {
         await this.$cache.store(this.argument('store')).forget(
             this.argument('key')
         );

@@ -15,14 +15,14 @@ import DatabaseStore from './adapter/database';
  */
 class CacheManager extends Manager {
 
-    $type: string = 'cache';
+    public $type: string = 'cache';
 
     /**
      * Get a cache store instance by name.
      * @param name - Store name
      * @returns Cache adapter instance
      */
-    store(name: string | null = null): CacheAdapter {
+    public store(name: string | null = null): CacheAdapter {
         return this.driver(name);
     }
 
@@ -31,7 +31,7 @@ class CacheManager extends Manager {
      * @param name - Store name
      * @returns Resolved cache adapter
      */
-    resolve(name: string): CacheAdapter {
+    public resolve(name: string): CacheAdapter {
         const $config = this.getStoreConfig(name);
 
         if (!$config) {
@@ -45,7 +45,7 @@ class CacheManager extends Manager {
      * @param $config - Driver configuration
      * @returns Cache adapter with memory store
      */
-    createMemoryDriver($config: Record<string, any>): CacheAdapter {
+    public createMemoryDriver($config: Record<string, any>): CacheAdapter {
         return this.adapt(new MemoryStore($config));
     }
 
@@ -54,7 +54,7 @@ class CacheManager extends Manager {
      * @param $config - Driver configuration
      * @returns Cache adapter with Redis store
      */
-    createRedisDriver($config: Record<string, any>): CacheAdapter {
+    public createRedisDriver($config: Record<string, any>): CacheAdapter {
         return this.adapt(new RedisStore(new RedisClient($config), $config, this.getPrefix() || ''));
     }
 
@@ -63,7 +63,7 @@ class CacheManager extends Manager {
      * @param $config - Driver configuration
      * @returns Cache adapter with Memcached store
      */
-    createMemcachedDriver($config: Record<string, any>): CacheAdapter {
+    public createMemcachedDriver($config: Record<string, any>): CacheAdapter {
         return this.adapt(new MemcachedStore(new MemCache($config), $config, this.getPrefix() || ''));
     }
 
@@ -72,7 +72,7 @@ class CacheManager extends Manager {
      * @param $config - Driver configuration
      * @returns Cache adapter with null store
      */
-    createNullDriver($config: Record<string, any>): CacheAdapter {
+    public createNullDriver($config: Record<string, any>): CacheAdapter {
         return this.adapt(new NullStore());
     }
 
@@ -81,7 +81,7 @@ class CacheManager extends Manager {
      * @param $config - Driver configuration
      * @returns Cache adapter with file store
      */
-    createFileDriver($config: Record<string, any>): CacheAdapter {
+    public createFileDriver($config: Record<string, any>): CacheAdapter {
         return this.adapt(new FileStore($config['path'], $config, this.getPrefix() || ''));
     }
 
@@ -90,7 +90,7 @@ class CacheManager extends Manager {
      * @param $config - Driver configuration
      * @returns Cache adapter with database store
      */
-    createDatabaseDriver($config: Record<string, any>): CacheAdapter {
+    public createDatabaseDriver($config: Record<string, any>): CacheAdapter {
         return this.adapt(new DatabaseStore($config['table'], this.$container.database));
     }
 
@@ -99,7 +99,7 @@ class CacheManager extends Manager {
      * @param $cache - Underlying store
      * @returns Cache adapter instance
      */
-    adapt($cache: any): CacheAdapter {
+    public adapt($cache: any): CacheAdapter {
         return new CacheAdapter($cache, this.getConfig('enabled'));
     }
 
@@ -107,7 +107,7 @@ class CacheManager extends Manager {
      * Get the cache prefix.
      * @returns Cache prefix string
      */
-    getPrefix(): string | undefined {
+    public getPrefix(): string | undefined {
         return super.getConfig(`prefix`);
     }
 
@@ -116,7 +116,7 @@ class CacheManager extends Manager {
      * @param name - Store name
      * @returns Store configuration object
      */
-    getStoreConfig(name: string): Record<string, any> | undefined {
+    public getStoreConfig(name: string): Record<string, any> | undefined {
         return this.getConfig(`stores.${name}`);
     }
 
@@ -125,7 +125,7 @@ class CacheManager extends Manager {
      * @param name - Store name
      * @returns Store configuration object
      */
-    getDriverConfig(name: string): Record<string, any> | undefined {
+    public getDriverConfig(name: string): Record<string, any> | undefined {
         return this.getStoreConfig(name);
     }
 

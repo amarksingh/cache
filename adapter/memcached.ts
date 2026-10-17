@@ -41,7 +41,7 @@ class MemcachedStore extends StoreHelper {
      * @param seconds - Duration in seconds
      * @returns True if set succeeded
      */
-    put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+    public put(key: string, value: any, seconds: number = 0): Promise<boolean> {
         const prefixedKey = this.applyDotPrefix(key);
         const {
             serializedValue,
@@ -59,7 +59,7 @@ class MemcachedStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns True if deleted
      */
-    forget(key: string): Promise<boolean> {
+    public forget(key: string): Promise<boolean> {
         return this.connection().delete(this.applyDotPrefix(key)).then(() => true).catch(() => false);
     }
 
@@ -67,7 +67,7 @@ class MemcachedStore extends StoreHelper {
      * Remove all items from the cache.
      * @returns True if flushed
      */
-    flush(): Promise<boolean> {
+    public flush(): Promise<boolean> {
         return this.connection().flush().then(() => true).catch(() => false);
     }
 
@@ -75,7 +75,7 @@ class MemcachedStore extends StoreHelper {
      * Get or create Memcached connection.
      * @returns Connection instance
      */
-    connection(): any {
+    public connection(): any {
         return this[kConnection] = this[kConnection] ? this[kConnection] : this[kClient].getConnection();
     }
 

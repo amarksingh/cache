@@ -23,7 +23,7 @@ class FileStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns Parsed cache payload
      */
-    async get(key: string): Promise<any> {
+    public async get(key: string): Promise<any> {
         return fs.readJson(this.applyPathPrefix(key)).then((result) => {
             if (Date.now() / 1000 >= Number(result.expiration)) {
                 this.forget(key);
@@ -40,7 +40,7 @@ class FileStore extends StoreHelper {
      * @param seconds - Duration in seconds
      * @returns True if written
      */
-    async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
+    public async put(key: string, value: any, seconds: number = 0): Promise<boolean> {
         const { serializedValue, valueType } = this.serializeValue(value);
         return fs.writeJson(this.applyPathPrefix(key), ({
             value: serializedValue,
@@ -55,7 +55,7 @@ class FileStore extends StoreHelper {
      * @param key - Cache key identifier
      * @returns Promise resolving on remove
      */
-    async forget(key: string): Promise<void> {
+    public async forget(key: string): Promise<void> {
         return fs.remove(this.applyPathPrefix(key));
     }
 
@@ -63,7 +63,7 @@ class FileStore extends StoreHelper {
      * Remove all items from the cache.
      * @returns Promise resolving on directory empty
      */
-    async flush(): Promise<void> {
+    public async flush(): Promise<void> {
         return fs.emptyDir(this.getRootPath() || '');
     }
 }
